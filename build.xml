@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Extended direct JavaScript files
+Our common functions based on JQuery
+
+(C) direct Netware Group - All rights reserved
+http://www.direct-netware.de/redirect.php?ext_djs
+
+This work is distributed under the W3C (R) Software License, but without any
+warranty; without even the implied warranty of merchantability or fitness
+for a particular purpose.
+
+http://www.direct-netware.de/redirect.php?licenses;w3c
+// -->
+<project name="djs" default="compile.djs">
+	<dirname property="djs.basedir" file="${ant.file}" />
+	<property file="${djs.basedir}/_extras/build.properties" />
+
+	<target name="compile.djs" description="Compile module ${ant.project.name}">
+		<exec executable="python">
+			<arg file="${jsBuilder.filePathName}" />
+			<arg value="--filetype=${jsBuilder.fileTypes}" />
+			<arg value="--include=${djs.basedir}/" />
+			<arg value="--output_path=${jsBuilder.target}" />
+			<arg value="--strip_prefix=${djs.basedir}/" />
+			<arg value="--exclude_dirs=_extras" />
+			<arg value="--exclude_files=makefile.py" />
+		</exec>
+	</target>
+
+	<target name="cleanup.djs.target" description="Clean target directory of ${ant.project.name}">
+		<delete includeEmptyDirs="true"><fileset dir="${jsBuilder.target}" /></delete>
+	</target>
+</project>
