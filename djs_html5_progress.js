@@ -63,7 +63,7 @@ function djs_html5_progress_replace (f_jquery_objects)
 	for (var f_i = 0;f_i < f_jquery_objects.length;++f_i)
 	{
 		f_jquery_progressbar = jQuery (f_jquery_objects[f_i]);
-		f_jquery_parent = f_jquery_progressbar.wrap("<div style='display:inline-block' />").parent ();
+		f_jquery_parent = f_jquery_progressbar.wrap("<div style='display:inline-block' />").parent().data ({ djsHtml5Replaced:true });
 
 		f_progress_value = f_jquery_progressbar.attr ('id');
 		if (f_progress_value !== undefined) { f_jquery_parent.attr ('id',f_progress_value); }

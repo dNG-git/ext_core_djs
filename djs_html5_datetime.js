@@ -208,46 +208,45 @@ function djs_html5_time_replace (f_params)
 {
 	if (('id' in f_params)&&('object' in f_params)&&('time_format' in f_params))
 	{
-		var f_date_object = new Date (),f_escaped_check = false,f_jquery_parent,f_pm_check = false,f_time_input,f_re_object,f_time_options,f_time_value;
+		var f_date_object = new Date (),f_escaped_check = false,f_jquery_parent,f_pm_check = false,f_time_input,f_re_object,f_re_sub_object,f_time_options,f_time_value = f_params.object.val (),f_timezone_H_diff = 0,f_timezone_i_diff = 0;
 		f_time_input = f_params.object.clone(true).attr ({ id:"djs_" + f_params.id + "_i",type:'hidden' });
 
-		f_re_object = /^(\d+):(\d+)(:\d+\.\d+|:\d+|)(Z|[\+-]\d+:\d+)$/.exec (f_params.object.val ());
+		f_re_object = /^(\d+):(\d+)(:\d+\.\d+|:\d+|)(Z|[\+-]\d+:\d+)$/.exec (f_time_value);
+
+		if (f_re_object === null) { f_re_object = /^(\d+):(\d+)(:\d+\.\d+|:\d+|)$/.exec (f_time_value); }
+		else if (f_re_object[4] !== 'Z')
+		{
+			f_re_sub_object = /^([\+-])(\d+):(\d+)$/.exec (f_re_object[4]);
+
+			if (f_re_sub_object !== null)
+			{
+				if (f_re_sub_object[1] == '+')
+				{
+					f_timezone_H_diff = parseInt (f_re_sub_object[2]);
+					f_timezone_i_diff = parseInt (f_re_sub_object[3]);
+				}
+				else
+				{
+					f_timezone_H_diff -= parseInt (f_re_sub_object[2]);
+					f_timezone_i_diff -= parseInt (f_re_sub_object[3]);
+				}
+			}
+		}
 
 		if (f_re_object !== null)
 		{
-			var f_timezone_H_diff = 0,f_timezone_i_diff = 0,f_re_sub_object;
-
-			if (f_re_object[4] !== 'Z')
-			{
-				f_re_sub_object = /^([\+-])(\d+):(\d+)$/.exec (f_re_object[4]);
-
-				if (f_re_sub_object !== null)
-				{
-					if (f_re_sub_object[1] == '+')
-					{
-						f_timezone_H_diff -= parseInt (f_re_sub_object[2]);
-						f_timezone_i_diff -= parseInt (f_re_sub_object[3]);
-					}
-					else
-					{
-						f_timezone_H_diff = parseInt (f_re_sub_object[2]);
-						f_timezone_i_diff = parseInt (f_re_sub_object[3]);
-					}
-				}
-			}
-
-			f_date_object.setUTCHours (parseInt (f_re_object[1]) + f_timezone_H_diff);
-			f_date_object.setUTCMinutes (parseInt (f_re_object[2]) + f_timezone_i_diff);
+			f_date_object.setHours (parseInt (f_re_object[1]) + f_timezone_H_diff);
+			f_date_object.setMinutes (parseInt (f_re_object[2]) + f_timezone_i_diff);
 
 			if (f_re_object[3] != '')
 			{
 				f_re_sub_object = /^:(\d+)\.(\d+)$/.exec (f_re_object[3]);
 
-				if (f_re_sub_object === null) { f_date_object.setUTCSeconds (parseInt (f_re_object[3].substring (1))); }
+				if (f_re_sub_object === null) { f_date_object.setSeconds (parseInt (f_re_object[3].substring (1))); }
 				else
 				{
-					f_date_object.setUTCSeconds (parseInt (f_re_sub_object[1]));
-					f_date_object.setUTCMilliseconds (parseInt (f_re_sub_object[2]));
+					f_date_object.setSeconds (parseInt (f_re_sub_object[1]));
+					f_date_object.setMilliseconds (parseInt (f_re_sub_object[2]));
 				}
 			}
 		}
