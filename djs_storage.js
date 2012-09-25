@@ -2,20 +2,20 @@
 
 /*n// NOTE
 ----------------------------------------------------------------------------
-secured WebGine
-net-based application engine
+Extended direct JavaScript files
+Our common functions based on JQuery
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-http://www.direct-netware.de/redirect.php?swg
+http://www.direct-netware.de/redirect.php?ext_core_djs
 
-This work is distributed under the W3C (R) Software License, but without any
-warranty; without even the implied warranty of merchantability or fitness
-for a particular purpose.
+This Source Code Form is subject to the terms of the Mozilla Public License,
+v. 2.0. If a copy of the MPL was not distributed with this file, You can
+obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
-http://www.direct-netware.de/redirect.php?licenses;w3c
+http://www.direct-netware.de/redirect.php?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(sWGbasicVersion)#
-sWG/#echo(__FILEPATH__)#
+#echo(djsVersion)#
+djs/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------
 NOTE_END //n*/
 
@@ -43,11 +43,7 @@ function djs_storage_delete_all ()
 	return f_return;
 }
 
-function djs_storage_get (f_key)
-{
-	if (djs_storage_handler != null) { return djs_storage_handler.getItem (f_key); }
-	else { return null; }
-}
+function djs_storage_get (f_key) { return ((djs_storage_handler != null) ? djs_storage_handler.getItem (f_key) : null); }
 
 function djs_storage_set (f_key,f_value)
 {
