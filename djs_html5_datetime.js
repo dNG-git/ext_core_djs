@@ -25,7 +25,8 @@ var djs_html5_datetime_time_format = null;
 function djs_html5_datetime (f_params,f_jquery_objects,f_callbacks)
 {
 	if (djs_html5_datetime_time_format === null) { djs_html5_datetime_time_format = ((/\W(am|pm)/i.test ((new Date ()).toLocaleTimeString ())) ? 'g:i a' : 'H:i'); }
-	var f_continue_check,f_jquery_objects = (((f_params !== undefined)&&('id' in f_params)) ? jQuery ("#" + f_params.id) : jQuery('input[type="date"],input[type="datetime"],input[type="datetime-local"],input[type="month"],input[type="time"]').filter (':visible'));
+	if (f_jquery_objects === undefined) { f_jquery_objects = (((f_params !== undefined)&&('id' in f_params)) ? jQuery ("#" + f_params.id) : jQuery('input[type="date"],input[type="datetime"],input[type="datetime-local"],input[type="month"],input[type="time"]').filter (':visible')); }
+	var f_continue_check;
 
 	if ((f_jquery_objects.length < 1)||(('valueAsDate' in f_jquery_objects[0])&&('valueAsNumber' in f_jquery_objects[0])&&(!isNaN (f_jquery_objects[0].valueAsNumber))))
 	{
@@ -54,12 +55,12 @@ function djs_html5_datetime (f_params,f_jquery_objects,f_callbacks)
 
 			jQuery.when.apply(jQuery,f_deferreds).done (function ()
 			{
-				f_callbacks = djs_html5_datetime_ready.callbacks;
-				f_jquery_objects = djs_html5_datetime_ready.objects;
+				var f_deferred_callbacks = djs_html5_datetime_ready.callbacks;
+				var f_deferred_jquery_objects = djs_html5_datetime_ready.objects;
 
 				djs_html5_datetime_ready = true;
 
-				djs_html5_datetime (f_params,f_jquery_objects,f_callbacks);
+				djs_html5_datetime (f_params,f_deferred_jquery_objects,f_deferred_callbacks);
 			});
 		}
 		else if (f_jquery_objects !== undefined)
@@ -84,6 +85,7 @@ function djs_html5_datetime (f_params,f_jquery_objects,f_callbacks)
 				else { djs_html5_datetime_replace ({ id:f_datetime_id,object:f_jquery_datetime,time_format:f_time_format }); }
 			}));
 
+			if ((f_callbacks === undefined)&&('onCompleted' in f_params)) { f_callbacks = [ f_params.onCompleted ]; }
 			f_continue_check = true;
 		}
 		else
