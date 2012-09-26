@@ -41,27 +41,25 @@ function djs_html5_datetime (f_params,f_jquery_objects,f_callbacks)
 		{
 			djs_html5_datetime_ready = { objects:f_jquery_objects,callbacks:[ ] };
 			if ('onCompleted' in f_params) { djs_html5_datetime_ready.callbacks.push (f_params.onCompleted); }
-			var f_deferreds,f_path = '';
 
+			var f_path = '';
 			if (('djs_var' in self)&&('base_path' in djs_var)) { f_path = djs_var.base_path + "/"; }
 
-			f_deferreds = [
+			var f_deferred = jQuery.when (
 				jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.core.min.js" }),
 				jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.widget.min.js" }),
 				jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.datepicker.min.js" })
-			];
-
-			if ('datetime_lang' in f_params) { f_deferreds.push (jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.datepicker-" + f_params.datetime_lang + ".js" })); }
-
-			jQuery.when.apply(jQuery,f_deferreds).done (function ()
+			),f_done_function = (function ()
 			{
-				var f_deferred_callbacks = djs_html5_datetime_ready.callbacks;
-				var f_deferred_jquery_objects = djs_html5_datetime_ready.objects;
+				f_callbacks = djs_html5_datetime_ready.callbacks;
+				f_jquery_objects = djs_html5_datetime_ready.objects;
 
 				djs_html5_datetime_ready = true;
-
-				djs_html5_datetime (f_params,f_deferred_jquery_objects,f_deferred_callbacks);
+				djs_html5_datetime (f_params,f_jquery_objects,f_callbacks);
 			});
+
+			if ('datetime_lang' in f_params) { f_deferred.done (function () { jQuery.ajax({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.datepicker-" + f_params.datetime_lang + ".js" }).done (f_done_function); }); }
+			else { f_deferred.done (f_done_function); }
 		}
 		else if (f_jquery_objects !== undefined)
 		{
@@ -96,6 +94,40 @@ function djs_html5_datetime (f_params,f_jquery_objects,f_callbacks)
 	}
 
 	if ((f_continue_check)&&(f_callbacks !== undefined)&&(f_callbacks.length > 0)) { jQuery.each (f_callbacks,(function () { djs_run (this); })); }
+}
+
+function djs_html5_datetime_event_set (f_event)
+{
+	if ((f_event.data.type == 't')||(f_event.data.type == 'tz'))
+	{
+		var f_date_object = jQuery("#" + f_event.data.id + "t").data ('timeObject'),f_jquery_object = jQuery("#djs_" + f_event.data.id + "_i"),f_tz_value = '';
+
+		if (f_event.data.type == 'tz')
+		{
+			f_tz_value = f_date_object.getTimezoneOffset ();
+
+			if (f_tz_value == 0) { f_tz_value = 'Z'; }
+			else
+			{
+				var f_tz_hours = (f_tz_value / -60),f_tz_minutes;
+
+				if (f_tz_hours > 0)
+				{
+					f_tz_minutes = (f_tz_value % -60);
+					f_tz_value = ((f_tz_hours < 10) ? "+0" + f_tz_hours : "+" + f_tz_hours);
+				}
+				else
+				{
+					f_tz_minutes = (f_tz_value % 60);
+					f_tz_value = ((f_tz_hours > -10) ? "-0" + (-1 * f_tz_hours) : f_tz_hours);
+				}
+
+				f_tz_value += ((f_tz_minutes < 10) ? ":0" + f_tz_minutes : ":" + f_tz_minutes);
+			}
+		}
+
+		f_jquery_object.val (f_jquery_object.val().replace (/[ T].*?$/,'T') + (jQuery("#djs_" + f_event.data.id + "t_i").val ()) + f_tz_value);
+	}
 }
 
 function djs_html5_datetime_replace (f_params)
@@ -170,38 +202,52 @@ function djs_html5_datetime_replace (f_params)
 	}
 }
 
-function djs_html5_datetime_event_set (f_event)
+function djs_html5_time_event_set (f_event)
 {
-	if ((f_event.data.type == 't')||(f_event.data.type == 'tz'))
+	var f_date_object,f_jquery_object = jQuery("#" + f_event.data.id);
+	f_date_object = f_jquery_object.data ('timeObject');
+
+	switch (f_event.data.type)
 	{
-		var f_date_object = jQuery("#" + f_event.data.id + "t").data ('timeObject'),f_jquery_object = jQuery("#djs_" + f_event.data.id + "_i"),f_tz_value = '';
+	case 'a':
+	case 'h':
+	{
+		var f_hours = parseInt (jQuery("#djs_" + f_event.data.id + "_ih").val ());
 
-		if (f_event.data.type == 'tz')
-		{
-			f_tz_value = f_date_object.getTimezoneOffset ();
+		if (jQuery("#djs_" + f_event.data.id + "_ia").val () == 'pm') { f_hours += 12; }
+		else if (f_hours > 11) { f_hours = 0; }
 
-			if (f_tz_value == 0) { f_tz_value = 'Z'; }
-			else
-			{
-				var f_tz_hours = (f_tz_value / -60),f_tz_minutes;
+		f_date_object.setHours (f_hours);
 
-				if (f_tz_hours > 0)
-				{
-					f_tz_minutes = (f_tz_value % -60);
-					f_tz_value = ((f_tz_hours < 10) ? "+0" + f_tz_hours : "+" + f_tz_hours);
-				}
-				else
-				{
-					f_tz_minutes = (f_tz_value % 60);
-					f_tz_value = ((f_tz_hours > -10) ? "-0" + (-1 * f_tz_hours) : f_tz_hours);
-				}
-
-				f_tz_value += ((f_tz_minutes < 10) ? ":0" + f_tz_minutes : ":" + f_tz_minutes);
-			}
-		}
-
-		f_jquery_object.val (f_jquery_object.val().replace (/[ T].*?$/,'T') + (jQuery("#djs_" + f_event.data.id + "t_i").val ()) + f_tz_value);
+		break;
 	}
+	case 'H':
+	{
+		f_date_object.setHours (parseInt (jQuery("#djs_" + f_event.data.id + "_iH").val ()));
+		break;
+	}
+	case 'i':
+	{
+		f_date_object.setMinutes (parseInt (jQuery("#djs_" + f_event.data.id + "_ii").val ()));
+		break;
+	}
+	}
+
+	jQuery("#djs_" + f_event.data.id + "_i").val(djs_html5_time_get_formatted (f_date_object.getHours (),(f_date_object.getMinutes ()),(f_date_object.getSeconds ()),(f_date_object.getMilliseconds ()))).trigger ('change');
+}
+
+function djs_html5_time_get_formatted (f_hours,f_minutes,f_seconds,f_milliseconds)
+{
+	var f_return = "";
+
+	if (f_hours < 10) { f_return += "0"; }
+	f_return += f_hours + ":";
+	if (f_minutes < 10) { f_return += "0"; }
+	f_return += f_minutes + ":";
+	if (f_seconds < 10) { f_return += "0"; }
+	f_return += f_seconds + "." + f_milliseconds;
+
+	return f_return;
 }
 
 function djs_html5_time_replace (f_params)
@@ -314,54 +360,6 @@ function djs_html5_time_replace (f_params)
 
 		f_jquery_parent.attr('id',f_params.id).data ({ djsHtml5Replaced:true,timeObject:f_date_object });
 	}
-}
-
-function djs_html5_time_get_formatted (f_hours,f_minutes,f_seconds,f_milliseconds)
-{
-	var f_return = "";
-
-	if (f_hours < 10) { f_return += "0"; }
-	f_return += f_hours + ":";
-	if (f_minutes < 10) { f_return += "0"; }
-	f_return += f_minutes + ":";
-	if (f_seconds < 10) { f_return += "0"; }
-	f_return += f_seconds + "." + f_milliseconds;
-
-	return f_return;
-}
-
-function djs_html5_time_event_set (f_event)
-{
-	var f_date_object,f_jquery_object = jQuery("#" + f_event.data.id);
-	f_date_object = f_jquery_object.data ('timeObject');
-
-	switch (f_event.data.type)
-	{
-	case 'a':
-	case 'h':
-	{
-		var f_hours = parseInt (jQuery("#djs_" + f_event.data.id + "_ih").val ());
-
-		if (jQuery("#djs_" + f_event.data.id + "_ia").val () == 'pm') { f_hours += 12; }
-		else if (f_hours > 11) { f_hours = 0; }
-
-		f_date_object.setHours (f_hours);
-
-		break;
-	}
-	case 'H':
-	{
-		f_date_object.setHours (parseInt (jQuery("#djs_" + f_event.data.id + "_iH").val ()));
-		break;
-	}
-	case 'i':
-	{
-		f_date_object.setMinutes (parseInt (jQuery("#djs_" + f_event.data.id + "_ii").val ()));
-		break;
-	}
-	}
-
-	jQuery("#djs_" + f_event.data.id + "_i").val(djs_html5_time_get_formatted (f_date_object.getHours (),(f_date_object.getMinutes ()),(f_date_object.getSeconds ()),(f_date_object.getMilliseconds ()))).trigger ('change');
 }
 
 //j// EOF

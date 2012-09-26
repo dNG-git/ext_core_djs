@@ -38,9 +38,9 @@ function djs_html5_progress (f_params)
 			if (('djs_var' in self)&&('base_path' in djs_var)) { f_path = djs_var.base_path + '/'; }
 
 jQuery.when (
- jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.core.min.js" }),
- jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.widget.min.js" }),
- jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.progressbar.min.js" })
+	jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.core.min.js" }),
+	jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.widget.min.js" }),
+	jQuery.ajax ({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.progressbar.min.js" })
 ).done(djs_html5_progress_replace).promise ();
 		}
 		else if (typeof (djs_html5_progress_ready) == 'boolean') { f_jquery_check = true; }
