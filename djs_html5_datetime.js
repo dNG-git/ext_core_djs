@@ -26,9 +26,9 @@ function djs_html5_datetime (f_params,f_jquery_objects,f_callbacks)
 {
 	if (djs_html5_datetime_time_format === null) { djs_html5_datetime_time_format = ((/\W(am|pm)/i.test ((new Date ()).toLocaleTimeString ())) ? 'g:i a' : 'H:i'); }
 	if (f_jquery_objects === undefined) { f_jquery_objects = (((f_params !== undefined)&&('id' in f_params)) ? jQuery ("#" + f_params.id) : jQuery('input[type="date"],input[type="datetime"],input[type="datetime-local"],input[type="month"],input[type="time"]').filter (':visible')); }
-	var f_continue_check;
+	var f_continue_check,f_jquery_object = f_jquery_objects.get (0);
 
-	if ((f_jquery_objects.length < 1)||(('valueAsDate' in f_jquery_objects[0])&&('valueAsNumber' in f_jquery_objects[0])&&(!isNaN (f_jquery_objects[0].valueAsNumber))))
+	if ((f_jquery_objects.length < 1)||(('valueAsDate' in f_jquery_object)&&('valueAsNumber' in f_jquery_object)&&(!isNaN (f_jquery_object.valueAsNumber))))
 	{
 		if ('onCompleted' in f_params) { f_callbacks = [ f_params.onCompleted ]; }
 		f_continue_check = true;
@@ -61,12 +61,12 @@ function djs_html5_datetime (f_params,f_jquery_objects,f_callbacks)
 			if ('datetime_lang' in f_params) { f_deferred.done (function () { jQuery.ajax({ cache:true,dataType:'script',url:f_path + "ext_jquery/jquery.ui.datepicker-" + f_params.datetime_lang + ".js" }).done (f_done_function); }); }
 			else { f_deferred.done (f_done_function); }
 		}
-		else if (f_jquery_objects !== undefined)
+		else if (djs_html5_datetime_ready === true)
 		{
 			var f_datetime_id,f_datetime_value,f_jquery_datetime,f_time_format = djs_html5_datetime_time_format;
 			if ('time_format' in f_params) { f_time_format = f_params.time_format; }
 
-			jQuery.each (f_jquery_objects,(function ()
+			f_jquery_objects.each (function ()
 			{
 				f_jquery_datetime = jQuery (this);
 				f_datetime_id = f_jquery_datetime.attr ('id');
@@ -81,7 +81,7 @@ function djs_html5_datetime (f_params,f_jquery_objects,f_callbacks)
 
 				if (f_datetime_value == 'time') { djs_html5_time_replace ({ id:f_datetime_id,object:f_jquery_datetime,time_format:f_time_format }); }
 				else { djs_html5_datetime_replace ({ id:f_datetime_id,object:f_jquery_datetime,time_format:f_time_format }); }
-			}));
+			});
 
 			if ((f_callbacks === undefined)&&('onCompleted' in f_params)) { f_callbacks = [ f_params.onCompleted ]; }
 			f_continue_check = true;
@@ -89,7 +89,7 @@ function djs_html5_datetime (f_params,f_jquery_objects,f_callbacks)
 		else
 		{
 			if ('onCompleted' in f_params) { djs_html5_datetime_ready.callbacks.push (f_params.onCompleted); }
-			djs_html5_datetime_ready.objects.concat (f_jquery_objects);
+			djs_html5_datetime_ready.objects = djs_html5_datetime_ready.objects.add (f_jquery_objects);
 		}
 	}
 
@@ -150,20 +150,50 @@ function djs_html5_datetime_replace (f_params)
 		case 'date':
 		{
 			f_jquery_object.datepicker('option','altFormat','yy-mm-dd');
-			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)$/.exec (f_datetime_value);
-			if ((f_datetime_value !== undefined)&&(f_re_object !== null)) { f_jquery_object.datepicker ('setDate',(new Date (parseInt (f_re_object[1]),(parseInt (f_re_object[2]) - 1),(parseInt (f_re_object[3]))))); }
+
+			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)$/,f_result_object;
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+			if (f_result_object !== null) { f_jquery_object.datepicker ('setDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3]))))); }
+
+			f_datetime_value = f_params.object.attr ('min');
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+			if (f_result_object !== null) { f_jquery_object.datepicker ('option','minDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3]))))); }
+
+			f_datetime_value = f_params.object.attr ('max');
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+			if (f_result_object !== null) { f_jquery_object.datepicker ('option','maxDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3]))))); }
 
 			break;
 		}
 		case 'datetime':
 		{
 			f_jquery_object.datepicker('option','altFormat','yy-mm-ddT').on ('change',{ id:f_params.id,type:'tz' },djs_html5_datetime_event_set);
-			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)[ T](\d+):(\d+)(:\d+\.\d+|:\d+|)(Z|[\+-]\d+:\d+)$/.exec (f_datetime_value);
 
-			if ((f_datetime_value !== undefined)&&(f_re_object !== null))
+			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)[ T](\d+):(\d+)(:\d+\.\d+|:\d+|)(Z|[\+-]\d+:\d+)$/,f_result_object;
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+
+			if (f_result_object !== null)
 			{
-				f_jquery_object.datepicker ('setDate',(new Date (parseInt (f_re_object[1]),(parseInt (f_re_object[2]) - 1),(parseInt (f_re_object[3])))));
-				f_time_object = jQuery("<input id=\"" + f_params.id + "t\" type='time' value=\"" + f_re_object[4] + ":" + f_re_object[5] + f_re_object[6] + f_re_object[7] + "\" />").on ('change',{ id:f_params.id,type:'tz' },djs_html5_datetime_event_set);
+				f_jquery_object.datepicker ('setDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
+				f_time_object = jQuery("<input id=\"" + f_params.id + "t\" type='time' value=\"" + f_result_object[4] + ":" + f_result_object[5] + f_result_object[6] + f_result_object[7] + "\" />").on ('change',{ id:f_params.id,type:'tz' },djs_html5_datetime_event_set);
+			}
+
+			f_datetime_value = f_params.object.attr ('min');
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+
+			if (f_result_object !== null)
+			{
+				f_jquery_object.datepicker ('option','minDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
+				if (f_time_object !== null) { f_time_object.attr ('min',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6] + f_result_object[7]); }
+			}
+
+			f_datetime_value = f_params.object.attr ('max');
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+
+			if (f_result_object !== null)
+			{
+				f_jquery_object.datepicker ('option','maxDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
+				if (f_time_object !== null) { f_time_object.attr ('max',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6] + f_result_object[7]); }
 			}
 
 			break;
@@ -171,12 +201,32 @@ function djs_html5_datetime_replace (f_params)
 		case 'datetime-local':
 		{
 			f_jquery_object.datepicker('option','altFormat','yy-mm-ddT').on ('change',{ id:f_params.id,type:'t' },djs_html5_datetime_event_set);
-			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)[ T](\d+):(\d+)(:\d+\.\d+|:\d+|)$/.exec (f_datetime_value);
 
-			if ((f_datetime_value !== undefined)&&(f_re_object !== null))
+			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)[ T](\d+):(\d+)(:\d+\.\d+|:\d+|)$/,f_result_object;
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+
+			if (f_result_object !== null)
 			{
-				f_jquery_object.datepicker ('setDate',(new Date (parseInt (f_re_object[1]),(parseInt (f_re_object[2]) - 1),(parseInt (f_re_object[3])))));
-				f_time_object = jQuery("<input id=\"" + f_params.id + "t\" type='time' value=\"" + f_re_object[4] + ":" + f_re_object[5] + f_re_object[6] + "\" />").on ('change',{ id:f_params.id,type:'t' },djs_html5_datetime_event_set);
+				f_jquery_object.datepicker ('setDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
+				f_time_object = jQuery("<input id=\"" + f_params.id + "t\" type='time' value=\"" + f_result_object[4] + ":" + f_result_object[5] + f_result_object[6] + "\" />").on ('change',{ id:f_params.id,type:'t' },djs_html5_datetime_event_set);
+			}
+
+			f_datetime_value = f_params.object.attr ('min');
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+
+			if (f_result_object !== null)
+			{
+				f_jquery_object.datepicker ('option','minDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
+				if (f_time_object !== null) { f_time_object.attr ('min',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6]); }
+			}
+
+			f_datetime_value = f_params.object.attr ('max');
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+
+			if (f_result_object !== null)
+			{
+				f_jquery_object.datepicker ('option','maxDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
+				if (f_time_object !== null) { f_time_object.attr ('max',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6]); }
 			}
 
 			break;
@@ -184,8 +234,25 @@ function djs_html5_datetime_replace (f_params)
 		case 'month':
 		{
 			f_jquery_object.datepicker ('option','altFormat','yy-mm');
-			var f_re_object = /^0*(\d+)\-0*(\d+)$/.exec (f_datetime_value);
-			if ((f_datetime_value !== undefined)&&(f_re_object !== null)) { f_jquery_object.datepicker ('setDate',(new Date (parseInt (f_re_object[1]),(parseInt (f_re_object[2]) - 1),1))); }
+
+			var f_re_object = /^0*(\d+)\-0*(\d+)$/,f_result_object;
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+			if (f_result_object !== null) { f_jquery_object.datepicker ('setDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),1))); }
+
+			f_datetime_value = f_params.object.attr ('min');
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+			if (f_result_object !== null) { f_jquery_object.datepicker ('option','minDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),1))); }
+
+			f_datetime_value = f_params.object.attr ('max');
+			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+
+			if (f_result_object !== null)
+			{
+				f_datetime_value = new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2])),1);
+				f_datetime_value.setTime (f_datetime_value.getTime () - 1);
+
+				f_jquery_object.datepicker ('option','maxDate',f_datetime_value);
+			}
 
 			break;
 		}
