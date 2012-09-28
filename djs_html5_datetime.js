@@ -169,7 +169,7 @@ function djs_html5_datetime_replace (f_params)
 		{
 			f_jquery_object.datepicker('option','altFormat','yy-mm-ddT').on ('change',{ id:f_params.id,type:'tz' },djs_html5_datetime_event_set);
 
-			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)[ T](\d+):(\d+)(:\d+\.\d+|:\d+|)(Z|[\+-]\d+:\d+)$/,f_result_object;
+			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)[ T](\d+):(\d+)(:\d+\.\d+|:\d+|)(Z|[\+-]\d+:\d+)$/,f_result_object,f_result_object_min;
 			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
 
 			if (f_result_object !== null)
@@ -179,13 +179,8 @@ function djs_html5_datetime_replace (f_params)
 			}
 
 			f_datetime_value = f_params.object.attr ('min');
-			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
-
-			if (f_result_object !== null)
-			{
-				f_jquery_object.datepicker ('option','minDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
-				if (f_time_object !== null) { f_time_object.attr ('min',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6] + f_result_object[7]); }
-			}
+			f_result_object_min = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+			if (f_result_object_min !== null) { f_jquery_object.datepicker ('option','minDate',(new Date (parseInt (f_result_object_min[1]),(parseInt (f_result_object_min[2]) - 1),(parseInt (f_result_object_min[3]))))); }
 
 			f_datetime_value = f_params.object.attr ('max');
 			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
@@ -193,7 +188,12 @@ function djs_html5_datetime_replace (f_params)
 			if (f_result_object !== null)
 			{
 				f_jquery_object.datepicker ('option','maxDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
-				if (f_time_object !== null) { f_time_object.attr ('max',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6] + f_result_object[7]); }
+
+				if ((f_time_object !== null)&&((f_result_object[1] + f_result_object[2] + f_result_object[3]) == (f_result_object_min[1] + f_result_object_min[2] + f_result_object_min[3])))
+				{
+					f_time_object.attr ('min',f_result_object_min[4] + ":" + f_result_object_min[5] + f_result_object_min[6] + f_result_object_min[7]);
+					f_time_object.attr ('max',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6] + f_result_object[7]);
+				}
 			}
 
 			break;
@@ -202,7 +202,7 @@ function djs_html5_datetime_replace (f_params)
 		{
 			f_jquery_object.datepicker('option','altFormat','yy-mm-ddT').on ('change',{ id:f_params.id,type:'t' },djs_html5_datetime_event_set);
 
-			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)[ T](\d+):(\d+)(:\d+\.\d+|:\d+|)$/,f_result_object;
+			var f_re_object = /^0*(\d+)\-0*(\d+)\-0*(\d+)[ T](\d+):(\d+)(:\d+\.\d+|:\d+|)$/,f_result_object,f_result_object_min;
 			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
 
 			if (f_result_object !== null)
@@ -212,13 +212,8 @@ function djs_html5_datetime_replace (f_params)
 			}
 
 			f_datetime_value = f_params.object.attr ('min');
-			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
-
-			if (f_result_object !== null)
-			{
-				f_jquery_object.datepicker ('option','minDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
-				if (f_time_object !== null) { f_time_object.attr ('min',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6]); }
-			}
+			f_result_object_min = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
+			if (f_result_object_min !== null) { f_jquery_object.datepicker ('option','minDate',(new Date (parseInt (f_result_object_min[1]),(parseInt (f_result_object_min[2]) - 1),(parseInt (f_result_object_min[3]))))); }
 
 			f_datetime_value = f_params.object.attr ('max');
 			f_result_object = ((f_datetime_value === undefined) ? null : f_re_object.exec (f_datetime_value));
@@ -226,7 +221,12 @@ function djs_html5_datetime_replace (f_params)
 			if (f_result_object !== null)
 			{
 				f_jquery_object.datepicker ('option','maxDate',(new Date (parseInt (f_result_object[1]),(parseInt (f_result_object[2]) - 1),(parseInt (f_result_object[3])))));
-				if (f_time_object !== null) { f_time_object.attr ('max',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6]); }
+
+				if ((f_time_object !== null)&&((f_result_object[1] + f_result_object[2] + f_result_object[3]) == (f_result_object_min[1] + f_result_object_min[2] + f_result_object_min[3])))
+				{
+					f_time_object.attr ('min',f_result_object_min[4] + ":" + f_result_object_min[5] + f_result_object_min[6]);
+					f_time_object.attr ('max',f_result_object[4] + ":" + f_result_object[5] + f_result_object[6]);
+				}
 			}
 
 			break;
@@ -271,20 +271,21 @@ function djs_html5_datetime_replace (f_params)
 
 function djs_html5_time_event_set (f_event)
 {
-	var f_date_object,f_jquery_object = jQuery("#" + f_event.data.id);
-	f_date_object = f_jquery_object.data ('timeObject');
+	var f_date_max = -1,f_date_min = -1,f_date_object,f_date_value,f_date_value_old,f_jquery_object = jQuery("#djs_" + f_event.data.id + "_i");
+	f_date_object = jQuery("#" + f_event.data.id).data ('timeObject');
+	f_date_value_old = f_date_object.getTime ();
 
 	switch (f_event.data.type)
 	{
 	case 'a':
 	case 'h':
 	{
-		var f_hours = parseInt (jQuery("#djs_" + f_event.data.id + "_ih").val ());
+		f_date_value = parseInt (jQuery("#djs_" + f_event.data.id + "_ih").val ());
 
-		if (jQuery("#djs_" + f_event.data.id + "_ia").val () == 'pm') { f_hours += 12; }
-		else if (f_hours > 11) { f_hours = 0; }
+		if (jQuery("#djs_" + f_event.data.id + "_ia").val () == 'pm') { f_date_value += 12; }
+		else if (f_date_value > 11) { f_date_value = 0; }
 
-		f_date_object.setHours (f_hours);
+		f_date_object.setHours (f_date_value);
 
 		break;
 	}
@@ -300,7 +301,64 @@ function djs_html5_time_event_set (f_event)
 	}
 	}
 
-	jQuery("#djs_" + f_event.data.id + "_i").val(djs_html5_time_get_formatted (f_date_object.getHours (),(f_date_object.getMinutes ()),(f_date_object.getSeconds ()),(f_date_object.getMilliseconds ()))).trigger ('change');
+	f_date_value = f_jquery_object.data ('max');
+	if (f_date_value !== undefined) { f_date_max = f_date_value; }
+
+	f_date_value = f_jquery_object.data ('min');
+	if (f_date_value !== undefined) { f_date_min = f_date_value; }
+
+	f_date_value = f_date_object.getTime ();
+
+	if (((f_date_max < 0)||(f_date_value <= f_date_max))&&((f_date_min < 0)||(f_date_value >= f_date_min))) { f_jquery_object.val(djs_html5_time_get_formatted (f_date_object.getHours (),(f_date_object.getMinutes ()),(f_date_object.getSeconds ()),(f_date_object.getMilliseconds ()))).trigger ('change'); }
+	else
+	{
+		f_date_object.setTime (f_date_value_old);
+
+		switch (f_event.data.type)
+		{
+		case 'a':
+		{
+			f_jquery_object = jQuery ("#djs_" + f_event.data.id + "_ia");
+
+			if (f_jquery_object.val () == 'pm') { f_jquery_object.val ('am'); }
+			else { f_jquery_object.val ('pm'); }
+
+			break;
+		}
+		case 'h':
+		{
+			f_jquery_object = jQuery ("#djs_" + f_event.data.id + "_ih");
+			f_date_value = f_date_object.getHours ();
+
+			if (f_date_value > 11)
+			{
+				jQuery("#djs_" + f_event.data.id + "_ia").val ('pm');
+				f_date_value = 0;
+			}
+
+			f_jquery_object.val (f_date_value);
+			break;
+		}
+		case 'H':
+		{
+			f_jquery_object = jQuery ("#djs_" + f_event.data.id + "_iH");
+			f_date_value = f_date_object.getHours ();
+
+			f_jquery_object.val (f_date_value);
+			break;
+		}
+		case 'i':
+		{
+			f_jquery_object = jQuery ("#djs_" + f_event.data.id + "_ii");
+			f_date_value = f_date_object.getMinutes ();
+
+			f_jquery_object.val (f_date_value);
+			break;
+		}
+		}
+
+		f_event.preventDefault ();
+	}
 }
 
 function djs_html5_time_get_formatted (f_hours,f_minutes,f_seconds,f_milliseconds)
@@ -321,7 +379,7 @@ function djs_html5_time_replace (f_params)
 {
 	if (('id' in f_params)&&('object' in f_params)&&('time_format' in f_params))
 	{
-		var f_date_object = new Date (),f_escaped_check = false,f_jquery_parent,f_pm_check = false,f_time_input,f_re_object,f_re_sub_object,f_time_options,f_time_value = f_params.object.val (),f_timezone_H_diff = 0,f_timezone_i_diff = 0;
+		var f_date_object = new Date (),f_date_limit_object,f_escaped_check = false,f_jquery_parent,f_pm_check = false,f_time_input,f_re_object,f_re_sub_object,f_time_options,f_time_value = f_params.object.val (),f_timezone_H_diff = 0,f_timezone_i_diff = 0;
 		f_time_input = f_params.object.clone(true).attr ({ id:"djs_" + f_params.id + "_i",type:'hidden' });
 
 		f_re_object = /^(\d+):(\d+)(:\d+\.\d+|:\d+|)(Z|[\+-]\d+:\d+)$/.exec (f_time_value);
@@ -362,6 +420,30 @@ function djs_html5_time_replace (f_params)
 					f_date_object.setMilliseconds (parseInt (f_re_sub_object[2]));
 				}
 			}
+		}
+
+		f_time_value = f_time_input.attr ("min");
+		f_re_object = ((f_time_value !== undefined) ? /^(\d+):(\d+)(:\d+\.\d+|:\d+|)$/.exec (f_time_value) : null);
+
+		if (f_re_object !== null)
+		{
+			f_date_limit_object = new Date ();
+			f_date_limit_object.setHours (parseInt (f_re_object[1]));
+			f_date_limit_object.setMinutes (parseInt (f_re_object[2]));
+			if (f_re_object[3] != '') { f_date_limit_object.setSeconds (parseInt (f_re_object[3].substring (1))); }
+			f_time_input.data ('min',(f_date_limit_object.getTime ()));
+		}
+
+		f_time_value = f_time_input.attr ("max");
+		f_re_object = ((f_time_value !== undefined) ? /^(\d+):(\d+)(:\d+\.\d+|:\d+|)$/.exec (f_time_value) : null);
+
+		if (f_re_object !== null)
+		{
+			f_date_limit_object = new Date ();
+			f_date_limit_object.setHours (parseInt (f_re_object[1]));
+			f_date_limit_object.setMinutes (parseInt (f_re_object[2]));
+			if (f_re_object[3] != '') { f_date_limit_object.setSeconds (parseInt (f_re_object[3].substring (1))); }
+			f_time_input.data ('max',(f_date_limit_object.getTime ()));
 		}
 
 		f_jquery_parent = f_params.object.wrap("<div class='ui-widget ui-widget-content ui-corner-all' style='display:inline-block' />").parent ();
