@@ -1,5 +1,7 @@
 _extras
+__py*
 .*
-ext_core_djs.*
-makefile.*
+*.pyc
+make*.py*
 nbproject
+pas_http_js.*

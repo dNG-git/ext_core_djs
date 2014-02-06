@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Extended direct JavaScript files
-Our common functions based on JQuery
+direct PAS
+Python Application Services
 
 (C) direct Netware Group - All rights reserved
-http://www.direct-netware.de/redirect.php?ext_core_djs
+http://www.direct-netware.de/redirect.py?pas;http;js
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -12,23 +12,17 @@ obtain one at http://mozilla.org/MPL/2.0/.
 
 http://www.direct-netware.de/redirect.php?licenses;mpl2
 // -->
-<project name="djs" default="compile.djs">
-	<dirname property="djs.basedir" file="${ant.file}" />
-	<property file="${djs.basedir}/_extras/build.properties" />
+<project name="pas_http_js" default="compile.src">
+	<dirname property="pas.basedir" file="${ant.file}" />
+	<property file="${pas.basedir}/_extras/build.properties" />
 
-	<target name="compile.djs" description="Compile module ${ant.project.name}">
+	<target name="compile.src" description="Compile module ${ant.project.name}">
 		<exec executable="python">
 			<arg file="${jsBuilder.filePathName}" />
 			<arg value="--filetype=${jsBuilder.fileTypes}" />
-			<arg value="--include=${djs.basedir}/" />
+			<arg value="--include=${pas.basedir}/src/" />
 			<arg value="--output_path=${jsBuilder.target}" />
-			<arg value="--strip_prefix=${djs.basedir}/" />
-			<arg value="--exclude_dirs=_extras" />
-			<arg value="--exclude_files=makefile.py" />
+			<arg value="--strip_prefix=${pas.basedir}/src/" />
 		</exec>
-	</target>
-
-	<target name="cleanup.djs.target" description="Clean target directory of ${ant.project.name}">
-		<delete includeEmptyDirs="true"><fileset dir="${jsBuilder.target}" /></delete>
 	</target>
 </project>
