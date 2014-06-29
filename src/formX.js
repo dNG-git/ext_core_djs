@@ -24,7 +24,7 @@ define([ 'jquery' ], function($) {
 
 		focus: function(id, duration) {
 			if (duration == null) { duration = this.focused_duration; }
-			if ($("#" + id).addClass(this.focused_class) != null) { self.setTimeout('require("djs/formX.min").unfocus("' + id + '")', duration); }
+			if ($("#" + id).addClass(this.focused_class) != null) { self.setTimeout('self._djs_formX_unfocus("' + id + '")', duration); }
 		},
 
 		init: function(args) {
@@ -34,6 +34,12 @@ define([ 'jquery' ], function($) {
 			var _type = null;
 
 			if ('id' in args && 'type' in args) {
+				if (!("_djs_formX_unfocus" in self)) {
+					self._djs_formX_unfocus = function(id) {
+						_this.unfocus(id);
+					};
+				}
+
 				if (this.focused_class == null) {
 					if ('djs_config' in self && 'formX_focused_class' in self.djs_config) { this.focused_class = self.djs_config.formX_focused_class; }
 					else { this.focused_class = 'djs-ui-formX-input-focus'; }
