@@ -17,15 +17,16 @@ http://www.direct-netware.de/redirect.php?licenses;mpl2
 #echo(__FILEPATH__)#
 ------------------------------------------------------------------------- */
 
-define([ 'jquery' ], function($) {
+define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	return {
 		responsive_table_class: null,
 
 		init: function(args) {
 			var _return = false;
 
-			if ('id' in args) {
-				var $table = $("#" + args['id']);
+			// TODO: Rename "display-table" to "displaytable" if that's available
+			if ('id' in args && 'display-table' in Modernizr && Modernizr['display-table']) {
+				var $table = $("#" + args.id);
 
 				if (this.responsive_table_class == null) {
 					if ($table.data('djs-ResponsiveTable-class') != undefined) { this.responsive_table_class = $table.data('djs-ResponsiveTable-class'); }

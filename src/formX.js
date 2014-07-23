@@ -17,23 +17,54 @@ http://www.direct-netware.de/redirect.php?licenses;mpl2
 #echo(__FILEPATH__)#
 ------------------------------------------------------------------------- */
 
-define([ 'jquery' ], function($) {
+define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	return {
 		focused_class: null,
 		focused_duration: null,
+		temporarily_disabled_duration: null,
+
+		disable_input_temporarily: function(id, event, duration) {
+			var _return = true;
+
+			if (duration == null) { duration = this.temporarily_disabled_duration; }
+			var $button = $("#" + id);
+
+			if ($button.prop('disabled')) { _return = false; }
+			else {
+				$button.attr('disabled', 'disabled');
+				self.setTimeout('self._djs_formX_enable_input("' + id + '")', duration);
+			}
+
+			if (event == null) { return _return; }
+			else if (!_return) { event.preventDefault(); }
+		},
+
+		enable_input: function(id) { $("#" + id).removeAttr('disabled'); },
 
 		focus: function(id, duration) {
 			if (duration == null) { duration = this.focused_duration; }
-			if ($("#" + id).addClass(this.focused_class) != null) { self.setTimeout('self._djs_formX_unfocus("' + id + '")', duration); }
+			var _this = this;
+
+			if ($("#" + id).addClass(this.focused_class) != null) {
+				if (duration > 0) { self.setTimeout('self._djs_formX_unfocus("' + id + '")', duration); }
+				else { $("#" + id).one('focusout', function() { _this.unfocus(id); }); }
+			}
 		},
 
 		init: function(args) {
 			var _return = false;
 
+			var $node = null;
 			var _this = this;
 			var _type = null;
 
 			if ('id' in args && 'type' in args) {
+				if (!("_djs_formX_enable_input" in self)) {
+					self._djs_formX_enable_input = function(id) {
+						_this.enable_input(id);
+					};
+				}
+
 				if (!("_djs_formX_unfocus" in self)) {
 					self._djs_formX_unfocus = function(id) {
 						_this.unfocus(id);
@@ -47,18 +78,35 @@ define([ 'jquery' ], function($) {
 
 				if (this.focused_duration == null) {
 					if ('djs_config' in self && 'formX_focused_duration' in self.djs_config) { this.focused_duration = self.djs_config.formX_focused_duration; }
-					else { this.focused_duration = 750; }
+					else { this.focused_duration = 0; }
 				}
 
+				if (this.temporarily_disabled_duration == null) {
+					if ('djs_config' in self && 'formX_temporarily_disabled_duration' in self.djs_config) { this.temporarily_disabled_duration = self.djs_config.formX_temporarily_disabled_duration; }
+					else { this.temporarily_disabled_duration = 3000; }
+				}
+
+				$node = $("#" + args.id);
 				_type = args.type;
 				_return = true;
 			}
 
-			if (_type != null && _type != 'datepicker' && _type != 'form' && _type != 'form_section' && _type != 'range' && _type != 'timepicker' && $("#" + args.id).on('focus', function() {
-				_this.focus(args.id);
-			})) { this.tabindex(args); }
+			if (_type != null && _type != 'datepicker' && _type != 'form' && _type != 'form_section' && _type != 'range' && _type != 'timepicker') {
+				$node.on('focus', function() { _this.focus(args.id); });
+				this.tabindex(args);
+			}
 
-			if (_type == 'button') { require([ 'jqueryui/button' ], function() { $("#" + args.id).button(); }); }
+			if (_type == 'button') {
+				if ($node.attr('type') == 'submit' && !($node.prop('disabled'))) {
+					$($node.prop('form')).on('submit', function(event) {
+						_this.disable_input_temporarily(args.id, event);
+					})
+				}
+			}
+
+			if ($node.attr('placeholder') != undefined && (!Modernizr.input.placeholder)) {
+				require([ 'jquery', 'jquery.placeholder' ], function($, $placeholder) { $node.placeholder(); });
+			}
 
 			return _return;
 		},
