@@ -37,8 +37,6 @@ define([ 'jquery' ], function($) {
 			var _return = false;
 
 			if ('id' in args && 'width' in args && 'height' in args) {
-				_return = true;
-
 				this.$canvas = $('<canvas id="' + args.id + '_djs_spinner_canvas" width="' + args['width'] + '" height="' + args['height'] + '" />');
 				$("#" + args.id).append(this.$canvas);
 
@@ -53,9 +51,15 @@ define([ 'jquery' ], function($) {
 				}
 
 				this.$canvas.data('_djs_spinner_instance', this);
+
+				_return = true;
 			}
 
 			return _return;
+		},
+
+		set_segments: function(segments) {
+			this.segments = segments;
 		},
 
 		set_value: function(value) {

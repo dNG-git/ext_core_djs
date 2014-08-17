@@ -53,6 +53,10 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 			}
 
 			return _return;
+		},
+
+		set_responsive_table_class: function(classname) {
+			this.responsive_table_class = classname;
 		}
 	};
 });

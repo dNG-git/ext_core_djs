@@ -108,6 +108,10 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 				require([ 'jquery', 'jquery.placeholder' ], function($, $placeholder) { $node.placeholder(); });
 			}
 
+			if (_type == 'form_section') {
+				require([ 'djs/Accordion.min' ], function(Accordion) { Accordion.fieldset_init(args); });
+			}
+
 			return _return;
 		},
 
@@ -116,7 +120,11 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 		},
 
 		set_focused_duration: function(duration) {
-			this.focused_duration = classname;
+			this.focused_duration = duration;
+		},
+
+		set_temporarily_disabled_duration: function(duration) {
+			this.temporarily_disabled_duration = duration;
 		},
 
 		tabindex: function(args) {
