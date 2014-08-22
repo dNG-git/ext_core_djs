@@ -5,132 +5,135 @@ direct PAS
 Python Application Services
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-http://www.direct-netware.de/redirect.py?pas;http;js
+https://www.direct-netware.de/redirect?pas;http;js
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
 obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
-http://www.direct-netware.de/redirect.php?licenses;mpl2
+https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
 #echo(pasHttpJsVersion)#
 #echo(__FILEPATH__)#
 ------------------------------------------------------------------------- */
 
 define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
-	return {
-		focused_class: null,
-		focused_duration: null,
-		temporarily_disabled_duration: null,
+	var tabindex_count = 1;
 
-		disable_input_temporarily: function(id, event, duration) {
-			var _return = true;
+	function enable_input(id) { $("#" + id).removeAttr('disabled'); }
 
-			if (duration == null) { duration = this.temporarily_disabled_duration; }
-			var $button = $("#" + id);
+	function unfocus(id, focused_class) { $("#" + id).removeClass(focused_class); }
 
-			if ($button.prop('disabled')) { _return = false; }
+	function XHtml5FormElement(args) {
+		this.focused_class = null;
+		this.focused_duration = null;
+		this.id = null;
+		this.$node = null;
+		this.temporarily_disabled_duration = null;
+		this.type = null;
+
+		if ('id' in args && 'type' in args) {
+			if (!("_djs_XHtml5FormElement_enable_input" in self)) {
+				self._djs_XHtml5FormElement_enable_input = function(id) {
+					enable_input(id);
+				};
+			}
+
+			if (!("_djs_XHtml5FormElement_unfocus" in self)) {
+				self._djs_XHtml5FormElement_unfocus = function(id, focused_class) {
+					unfocus(id, focused_class);
+				};
+			}
+
+			if (this.focused_class == null) {
+				if ('djs_config' in self && 'XHtml5FormElement_focused_class' in self.djs_config) { this.focused_class = self.djs_config.XHtml5FormElement_focused_class; }
+				else { this.focused_class = 'djs-ui-XHtml5FormElement-input-focus'; }
+			}
+
+			if (this.focused_duration == null) {
+				if ('djs_config' in self && 'XHtml5FormElement_focused_duration' in self.djs_config) { this.focused_duration = self.djs_config.XHtml5FormElement_focused_duration; }
+				else { this.focused_duration = 0; }
+			}
+
+			if (this.temporarily_disabled_duration == null) {
+				if ('djs_config' in self && 'XHtml5FormElement_temporarily_disabled_duration' in self.djs_config) { this.temporarily_disabled_duration = self.djs_config.XHtml5FormElement_temporarily_disabled_duration; }
+				else { this.temporarily_disabled_duration = 3000; }
+			}
+
+			this.id = args.id;
+			this.$node = $("#" + args.id);
+			this.type = args.type;
+		}
+
+		var _this = this;
+
+		if (!(this.type in [ 'datepicker', 'form', 'form_section', 'range', 'timepicker' ])) {
+			this.$node.on('focus', function() { _this.focus(); });
+			this.tabindex();
+		}
+
+		if (this.type == 'button') {
+			if (this.$node.attr('type') == 'submit' && !(this.$node.prop('disabled'))) {
+				$(this.$node.prop('form')).on('submit', function(event) {
+					_this.disable_input_temporarily(event);
+				})
+			}
+		}
+
+		if (this.$node.attr('placeholder') != undefined && (!Modernizr.input.placeholder)) {
+			require([ 'jquery', 'jquery.placeholder' ], function($, $placeholder) { _this.$node.placeholder(); });
+		}
+
+		if (this.type == 'form_section') {
+			require([ 'djs/Accordion.min' ], function(Accordion) { new Accordion(args); });
+		}
+	}
+
+	XHtml5FormElement.prototype.disable_input_temporarily = function(event, duration) {
+		var _return = true;
+
+		if (duration == null) { duration = this.temporarily_disabled_duration; }
+
+		if (this.$node.prop('disabled')) { _return = false; }
+		else {
+			this.$node.attr('disabled', 'disabled');
+			self.setTimeout('self._djs_XHtml5FormElement_enable_input("' + id + '")', duration);
+		}
+
+		if (event == null) { return _return; }
+		else if (!_return) { event.preventDefault(); }
+	}
+
+	XHtml5FormElement.prototype.focus = function(duration) {
+		if (duration == null) { duration = this.focused_duration; }
+
+		if (this.$node.addClass(this.focused_class) != null) {
+			if (duration > 0) { self.setTimeout('self._djs_XHtml5FormElement_unfocus("' + this.id + '", "' + this.focused_class + '")', duration); }
 			else {
-				$button.attr('disabled', 'disabled');
-				self.setTimeout('self._djs_formX_enable_input("' + id + '")', duration);
+				var _this = this;
+				this.$node.one('focusout', function() { unfocus(_this.id, _this.focused_class); });
 			}
+		}
+	}
 
-			if (event == null) { return _return; }
-			else if (!_return) { event.preventDefault(); }
-		},
+	XHtml5FormElement.prototype.set_focused_class = function(classname) {
+		this.focused_class = classname;
+	}
 
-		enable_input: function(id) { $("#" + id).removeAttr('disabled'); },
+	XHtml5FormElement.prototype.set_focused_duration = function(duration) {
+		this.focused_duration = duration;
+	}
 
-		focus: function(id, duration) {
-			if (duration == null) { duration = this.focused_duration; }
-			var _this = this;
+	XHtml5FormElement.prototype.set_temporarily_disabled_duration = function(duration) {
+		this.temporarily_disabled_duration = duration;
+	}
 
-			if ($("#" + id).addClass(this.focused_class) != null) {
-				if (duration > 0) { self.setTimeout('self._djs_formX_unfocus("' + id + '")', duration); }
-				else { $("#" + id).one('focusout', function() { _this.unfocus(id); }); }
-			}
-		},
+	XHtml5FormElement.prototype.tabindex = function() {
+		this.$node.attr('tabindex', tabindex_count);
+		tabindex_count += 1;
+	}
 
-		init: function(args) {
-			var _return = false;
-
-			var $node = null;
-			var _this = this;
-			var _type = null;
-
-			if ('id' in args && 'type' in args) {
-				if (!("_djs_formX_enable_input" in self)) {
-					self._djs_formX_enable_input = function(id) {
-						_this.enable_input(id);
-					};
-				}
-
-				if (!("_djs_formX_unfocus" in self)) {
-					self._djs_formX_unfocus = function(id) {
-						_this.unfocus(id);
-					};
-				}
-
-				if (this.focused_class == null) {
-					if ('djs_config' in self && 'formX_focused_class' in self.djs_config) { this.focused_class = self.djs_config.formX_focused_class; }
-					else { this.focused_class = 'djs-ui-formX-input-focus'; }
-				}
-
-				if (this.focused_duration == null) {
-					if ('djs_config' in self && 'formX_focused_duration' in self.djs_config) { this.focused_duration = self.djs_config.formX_focused_duration; }
-					else { this.focused_duration = 0; }
-				}
-
-				if (this.temporarily_disabled_duration == null) {
-					if ('djs_config' in self && 'formX_temporarily_disabled_duration' in self.djs_config) { this.temporarily_disabled_duration = self.djs_config.formX_temporarily_disabled_duration; }
-					else { this.temporarily_disabled_duration = 3000; }
-				}
-
-				$node = $("#" + args.id);
-				_type = args.type;
-				_return = true;
-			}
-
-			if (_type != null && _type != 'datepicker' && _type != 'form' && _type != 'form_section' && _type != 'range' && _type != 'timepicker') {
-				$node.on('focus', function() { _this.focus(args.id); });
-				this.tabindex(args);
-			}
-
-			if (_type == 'button') {
-				if ($node.attr('type') == 'submit' && !($node.prop('disabled'))) {
-					$($node.prop('form')).on('submit', function(event) {
-						_this.disable_input_temporarily(args.id, event);
-					})
-				}
-			}
-
-			if ($node.attr('placeholder') != undefined && (!Modernizr.input.placeholder)) {
-				require([ 'jquery', 'jquery.placeholder' ], function($, $placeholder) { $node.placeholder(); });
-			}
-
-			if (_type == 'form_section') {
-				require([ 'djs/Accordion.min' ], function(Accordion) { Accordion.fieldset_init(args); });
-			}
-
-			return _return;
-		},
-
-		set_focused_class: function(classname) {
-			this.focused_class = classname;
-		},
-
-		set_focused_duration: function(duration) {
-			this.focused_duration = duration;
-		},
-
-		set_temporarily_disabled_duration: function(duration) {
-			this.temporarily_disabled_duration = duration;
-		},
-
-		tabindex: function(args) {
-		},
-
-		unfocus: function(id) { $("#" + id).removeClass(this.focused_class); }
+	return XHtml5FormElement;
 /*
 			if (f_type == 'datepicker')
 			{
@@ -288,7 +291,6 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 				}
 			}
 */
-	};
 });
 
 //j// EOF
