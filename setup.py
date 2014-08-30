@@ -41,7 +41,8 @@ with TemporaryDirectory(dir = ".") as build_directory:
 	css_js_copyright = "djs #echo(pasHttpJsVersion)# - (C) direct Netware Group - All rights reserved"
 
 	parameters = { "pasHttpJsVersion": get_version(),
-	               "js_header": css_js_copyright, "js_min_filenames": True
+	               "js_header": css_js_copyright, "js_min_filenames": True,
+	               "js_strip_source_directory": True
 	             }
 
 	InstallData.add_install_data_callback(InstallJsData.callback, [ "src" ])
