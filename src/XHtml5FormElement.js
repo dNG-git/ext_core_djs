@@ -33,13 +33,13 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 		this.type = null;
 
 		if ('id' in args && 'type' in args) {
-			if (!("_djs_XHtml5FormElement_enable_input" in self)) {
+			if (!('_djs_XHtml5FormElement_enable_input' in self)) {
 				self._djs_XHtml5FormElement_enable_input = function(id) {
 					enable_input(id);
 				};
 			}
 
-			if (!("_djs_XHtml5FormElement_unfocus" in self)) {
+			if (!('_djs_XHtml5FormElement_unfocus' in self)) {
 				self._djs_XHtml5FormElement_unfocus = function(id, focused_class) {
 					unfocus(id, focused_class);
 				};

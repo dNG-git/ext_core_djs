@@ -49,13 +49,13 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 
 	function ClosingBlock(args) {
 		if ('id' in args && 'width' in args && 'height' in args && 'timeout' in args) {
-			if (!("_djs_ClosingBlock_close" in self)) {
+			if (!('_djs_ClosingBlock_close' in self)) {
 				self._djs_ClosingBlock_close = function(id) {
 					close(id);
 				};
 			}
 
-			if (!("_djs_ClosingBlock_tick" in self)) {
+			if (!('_djs_ClosingBlock_tick' in self)) {
 				self._djs_ClosingBlock_tick = function(id, timeout) {
 					_tick(id, timeout);
 				};
