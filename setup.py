@@ -2,11 +2,11 @@
 ##j## BOF
 
 """
-direct PAS
-Python Application Services
+direct JavaScript
+All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?pas;http;js
+https://www.direct-netware.de/redirect?js;djs
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -38,9 +38,9 @@ from os import path
 
 with TemporaryDirectory(dir = ".") as build_directory:
 #
-	css_js_copyright = "djs #echo(pasHttpJsVersion)# - (C) direct Netware Group - All rights reserved"
+	css_js_copyright = "djs #echo(jsDjsVersion)# - (C) direct Netware Group - All rights reserved"
 
-	parameters = { "pasHttpJsVersion": get_version(),
+	parameters = { "jsDjsVersion": get_version(),
 	               "js_header": css_js_copyright, "js_min_filenames": True,
 	               "js_strip_source_directory": True
 	             }
@@ -51,8 +51,8 @@ with TemporaryDirectory(dir = ".") as build_directory:
 
 	setup(name = "pas_http_js",
 	      version = get_version(),
-	      description = "Python Application Services",
-	      long_description = """"pas_http_js" contains JavaScript files used in XHTML output.""",
+	      description = "All-in-one toolbox for HTML5 presentation and manipulation",
+	      long_description = """direct JavaScript contains a set of modules for HTML5 presentation and manipulation.""",
 	      author = "direct Netware Group",
 	      author_email = "web@direct-netware.de",
 	      license = "MPL2",

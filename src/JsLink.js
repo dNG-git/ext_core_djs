@@ -13,11 +13,20 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(pasHttpJsVersion)#
+#echo(jsDjsVersion)#
 #echo(__FILEPATH__)#
 ------------------------------------------------------------------------- */
 
+/**
+ * @module JsLink
+ */
 define([ 'jquery' ], function($) {
+	/**
+	 * "JsLink" rewrites deactivated links if JavaScript is available.
+	 *
+	 * @class JsLink
+	 * @param {Object} args Arguments to initialize a given JsLink
+	 */
 	function JsLink(args) {
 		if ('id' in args) {
 			var $placeholder_node = $("#" + args.id);
@@ -28,9 +37,18 @@ define([ 'jquery' ], function($) {
 			var $link_content = $placeholder_node.contents();
 
 			$node = $('<a href="' + url_href + '" />');
-			if (url_target != undefined) { $node.attr('target', url_target); }
-			if (url_class != undefined) { $node.addClass(url_class); }
-			if (url_style != undefined) { $node.attr('style', url_style); }
+
+			if (url_target != undefined) {
+				$node.attr('target', url_target);
+			}
+
+			if (url_class != undefined) {
+				$node.addClass(url_class);
+			}
+
+			if (url_style != undefined) {
+				$node.attr('style', url_style);
+			}
 
 			$link_content.detach();
 			$placeholder_node.replaceWith($node);

@@ -13,11 +13,23 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(pasHttpJsVersion)#
+#echo(jsDjsVersion)#
 #echo(__FILEPATH__)#
 ------------------------------------------------------------------------- */
 
+/**
+ * @module ClosingBlock
+ */
 define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
+	/**
+	 * The "close()" helper function is called if the spinner is clicked or after a
+	 * timeout.
+	 *
+	 * @function
+	 * @name _djs_ClosingBlock_close
+	 * @global
+	 * @param {String} id Block ID to be closed
+	 */
 	function close(id) {
 		var $node = $("#" + id);
 
@@ -33,8 +45,17 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 		}
 	}
 
+	/**
+	 * The "_tick() " helper function is used to increase the spinner value.
+	 *
+	 * @function
+	 * @name _djs_ClosingBlock_tick
+	 * @global
+	 * @param {String} id Block ID to be closed
+	 * @param {Number} timeout Timeout value for each tick callback
+	 */
 	function _tick(id, timeout) {
-		var ticked_spinner = $("#" + id + "_djs_spinner_canvas").data('_djs_spinner');
+		var ticked_spinner = $("#" + id + "_djs_spinner_canvas").data('djs-spinner');
 
 		if (ticked_spinner != undefined) {
 			var spinner_value = ticked_spinner.get_value();
@@ -43,10 +64,19 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 			if (spinner_value <= 100) {
 				ticked_spinner.set_value(spinner_value);
 				self.setTimeout('self._djs_ClosingBlock_tick("' + id + '", ' + timeout + ')', timeout);
-			} else { close(id); }
+			} else {
+				close(id);
+			}
 		}
 	}
 
+	/**
+	 * "ClosingBlock" is a spinner animated block that closes itself after a
+	 * given timeout.
+	 *
+	 * @class ClosingBlock
+	 * @param {Object} args Arguments to initialize a given ClosingBlock
+	 */
 	function ClosingBlock(args) {
 		if ('id' in args && 'width' in args && 'height' in args && 'timeout' in args) {
 			if (!('_djs_ClosingBlock_close' in self)) {
@@ -76,8 +106,8 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 				self.setTimeout('self._djs_ClosingBlock_tick("' + args.id + '", ' + timeout + ')', timeout);
 			} catch (handled_exception) {
 				$close_link = $('<a href="javascript:self._djs_ClosingBlock_close(\'' + args.id + '\')">x</a>');
-				if ('css_class' in args) { $close_link.addClass(args.css_class); }
-				if ('css_style' in args) { $close_link.css(args.css_style); }
+				if ('Spinner_class' in args) { $close_link.addClass(args.Spinner_class); }
+				if ('Spinner_style' in args) { $close_link.css(args.Spinner_style); }
 				$node.append($close_link);
 
 				self.setTimeout('self._djs_ClosingBlock_close("' + args.id + '")', args.timeout * 1000);

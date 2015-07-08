@@ -13,7 +13,7 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(pasHttpJsVersion)#
+#echo(jsDjsVersion)#
 #echo(__FILEPATH__)#
 ------------------------------------------------------------------------- */
 
@@ -30,20 +30,35 @@ define([ 'jquery' ], function($) {
 		this.visible = false;
 
 		if ('id' in args && 'width' in args && 'height' in args) {
+			var $canvas_parent = $("#" + args.id);
+
 			this.$canvas = $('<canvas id="' + args.id + '_djs_spinner_canvas" width="' + args.width + '" height="' + args.height + '" />');
-			$("#" + args.id).append(this.$canvas);
+			$canvas_parent.append(this.$canvas);
 
-			if (!('getContext' in this.$canvas.get(0))) { throw 'Canvas not supported'; }
+			if (!('getContext' in this.$canvas.get(0))) {
+				throw 'Canvas not supported';
+			}
 
-			if ('css_class' in args) { this.$canvas.addClass(args.css_class); }
-			if ('css_style' in args) { this.$canvas.css(args.css_style); }
+			if ('Spinner_class' in args) {
+				this.$canvas.addClass(args.Spinner_class);
+			} else if ($canvas_parent.data('djs-ui-spinner-class') != undefined) {
+				this.$canvas.addClass($canvas_parent.data('djs-ui-spinner-class'));
+			} else if ('djs_config' in self && 'Spinner_class' in self.djs_config) {
+				this.$canvas.addClass(self.djs_config.Spinner_class);
+			} else {
+				this.$canvas.addClass('djs-ui-Spinner');
+			}
+
+			if ('Spinner_style' in args) {
+				this.$canvas.css(args.Spinner_style);
+			}
 
 			if ('value' in args) {
 				this.indeterminate = false;
 				this.set_value(args['value']);
 			}
 
-			this.$canvas.data('_djs_spinner', this);
+			this.$canvas.data('djs-spinner', this);
 		}
 	}
 
@@ -57,7 +72,10 @@ define([ 'jquery' ], function($) {
 
 	Spinner.prototype.set_value = function(value) {
 		this.value = value;
-		if (this.visible) { this.$canvas.queue('fx', this._paint).dequeue(); }
+
+		if (this.visible) {
+			this.$canvas.queue('fx', this._paint).dequeue();
+		}
 	}
 
 	Spinner.prototype.show = function() {
@@ -71,7 +89,7 @@ define([ 'jquery' ], function($) {
 	}
 
 	Spinner.prototype._paint = function(next) {
-		var _this = $(this).data('_djs_spinner');
+		var _this = $(this).data('djs-spinner');
 
 		var circle_radius = Math.round(Math.min(_this.canvas_width, _this.canvas_height) / 2);
 
@@ -85,10 +103,17 @@ define([ 'jquery' ], function($) {
 		var line_size = Math.round(circle_radius / _this.segments) + 1;
 
 		if (_this.indeterminate) {
-			if (_this.spinner_position > 0) { indicator_intensity -= (indicator_fade_percentage * _this.spinner_position); }
+			if (_this.spinner_position > 0) {
+				indicator_intensity -= (indicator_fade_percentage * _this.spinner_position);
+			}
 		} else {
-			if (_this.value >= 0 && _this.value <= 100) { indicator_value = _this.value; }
-			if ((indicator_value / 100) < indicator_fade_percentage) { indicator_intensity = 0.5; }
+			if (_this.value >= 0 && _this.value <= 100) {
+				indicator_value = _this.value;
+			}
+
+			if ((indicator_value / 100) < indicator_fade_percentage) {
+				indicator_intensity = 0.5;
+			}
 		}
 
 		var ctx = _this.$canvas.get(0).getContext('2d');
@@ -123,8 +148,13 @@ define([ 'jquery' ], function($) {
 			var segment = (1 + i + _this.spinner_position);
 
 			if (_this.indeterminate) {
-				if (segment < _this.segments) { indicator_intensity = 1 - (indicator_fade_percentage * (_this.spinner_position + i)); }
-				else { indicator_intensity = 1 - (indicator_fade_percentage * ((i + _this.spinner_position) - _this.segments)); }
+				var indicator_fade_multiplicator = i + _this.spinner_position;
+
+				if (segment >= _this.segments) {
+					indicator_fade_multiplicator -= _this.segments;
+				}
+
+				indicator_intensity = 1 - (indicator_fade_percentage * indicator_fade_multiplicator);
 
 				ctx.strokeStyle = 'rgba(0, 0, 0, ' + indicator_intensity + ')';
 			} else if (indicator_intensity > 0.5 && indicator_value < (((1 + segment) / _this.segments) * 100)) {
@@ -136,7 +166,10 @@ define([ 'jquery' ], function($) {
 
 		if (_this.indeterminate) {
 			_this.spinner_position += 1;
-			if (_this.spinner_position >= _this.segments) { _this.spinner_position = 0; }
+
+			if (_this.spinner_position >= _this.segments) {
+				_this.spinner_position = 0;
+			}
 
 			_this.$canvas.delay(100).queue('fx', _this._paint);
 			next();

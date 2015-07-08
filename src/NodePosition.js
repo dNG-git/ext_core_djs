@@ -13,12 +13,23 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(pasHttpJsVersion)#
+#echo(jsDjsVersion)#
 #echo(__FILEPATH__)#
 ------------------------------------------------------------------------- */
 
+/**
+ * @module NodePosition
+ */
 define([ 'jquery' ], function($) {
-	function _get_hidden_node_dimensions($node, additional_metrics) {
+	/**
+	 * The "_get_hidden_node_metrics()" helper function is used to get metrics of
+	 * hidden nodes.
+	 *
+	 * @function
+	 * @param {Object} $node jQuery node instance
+	 * @param {Boolean} additional_metrics True to calculate additional metrics
+	 */
+	function _get_hidden_node_metrics($node, additional_metrics) {
 		var display_value = $node.css('display');
 		var position_value = $node.css('position');
 		var top_value = $node.css('top');
@@ -32,48 +43,81 @@ define([ 'jquery' ], function($) {
 		});
 
 		var _return = _get_node_metrics($node, additional_metrics);
-		if (additional_metrics) { _return.top = ((top_value == undefined) ? undefined : parseInt(top_value)); }
+
+		if (additional_metrics) {
+			_return.top = ((top_value == undefined) ? undefined : parseInt(top_value));
+		}
 
 		var css_attributes = { };
 
-		if (display_value != undefined) { css_attributes['display'] = display_value; }
-		if (position_value != undefined) { css_attributes['position'] = position_value; }
-		if (top_value != undefined) { css_attributes['top'] = top_value; }
-		if (visibility_value != undefined) { css_attributes['visibility'] = visibility_value; }
+		if (display_value != undefined) {
+			css_attributes['display'] = display_value;
+		}
+
+		if (position_value != undefined) {
+			css_attributes['position'] = position_value;
+		}
+
+		if (top_value != undefined) {
+			css_attributes['top'] = top_value;
+		}
+
+		if (visibility_value != undefined) {
+			css_attributes['visibility'] = visibility_value;
+		}
 
 		$node.css(css_attributes);
 
 		return _return;
 	}
 
+	/**
+	 * The "_get_node_metrics()" helper function is used to get metrics of
+	 * nodes.
+	 *
+	 * @function
+	 * @param {Object} $node jQuery node instance
+	 * @param {Boolean} additional_metrics True to calculate additional metrics
+	 */
 	function _get_node_metrics($node, additional_metrics) {
-		if (additional_metrics == null) { additional_metrics = false; }
+		if (additional_metrics == null) {
+			additional_metrics = false;
+		}
 
-		var $hidden_node = $node.filter(':hidden');
 		var _return = { width: 0, height: 0 };
 
-		if ($hidden_node.length > 0) { _return = _get_hidden_node_dimensions($node); }
-		else {
+		var $hidden_node = $node.filter(':hidden');
+
+		if ($hidden_node.length > 0) {
+			_return = _get_hidden_node_metrics($node);
+		} else {
 			_return.width = $node.outerWidth();
 			_return.height = $node.outerHeight();
 
 			if (additional_metrics) {
 				var offset = $node.offset();
 
-				_return['top'] = Math.floor(offset.top);
-				_return['left'] = Math.floor(offset.left);
-				_return['contentWidth'] = Math.floor($node.width());
-				_return['contentHeight'] = Math.floor($node.height());
-				_return['innerWidth'] = Math.floor($node.innerWidth());
-				_return['innerHeight'] = Math.floor($node.innerHeight());
-				_return['outerWidth'] = Math.floor($node.outerWidth(true));
-				_return['outerHeight'] = Math.floor($node.outerHeight(true));
+				_return['top'] = offset.top;
+				_return['left'] = offset.left;
+				_return['contentWidth'] = $node.width();
+				_return['contentHeight'] = $node.height();
+				_return['innerWidth'] = $node.innerWidth();
+				_return['innerHeight'] = $node.innerHeight();
+				_return['outerWidth'] = $node.outerWidth(true);
+				_return['outerHeight'] = $node.outerHeight(true);
 			}
 		}
 
 		return _return;
 	}
 
+	/**
+	 * "NodePosition" provides calculation and automated reposition of referenced
+	 * blocks.
+	 *
+	 * @class NodePosition
+	 * @param {Object} args Arguments to initialize a given NodePosition
+	 */
 	function NodePosition(args) {
 		this.$at = null;
 		this.at_reference_configuration = { x: 'center', y: 'bottom' };
@@ -81,11 +125,17 @@ define([ 'jquery' ], function($) {
 		this.my_reference_configuration = { x: 'center', y: 'top' };
 		this.$viewport = null;
 
-		if ('at_id' in args) { this.$at = $("#" + args.at_id); }
-		else if ('jQat' in args) { this.$at = args.jQat; }
+		if ('at_id' in args) {
+			this.$at = $("#" + args.at_id);
+		} else if ('jQat' in args && args.jQat.length > 0) {
+			this.$at = args.jQat;
+		}
 
-		if ('my_id' in args) { this.$my = $("#" + args.my_id); }
-		else if ('jQmy' in args) { this.$my = args.jQmy; }
+		if ('my_id' in args) {
+			this.$my = $("#" + args.my_id);
+		} else if ('jQmy' in args && args.jQmy.length > 0) {
+			this.$my = args.jQmy;
+		}
 
 		if (this.$at != null && this.$my != null) {
 			if ('at_reference' in args) {
@@ -106,9 +156,13 @@ define([ 'jquery' ], function($) {
 				}
 			}
 
-			if ('jQviewport' in args) { this.$viewport = args.viewport; }
-			else if ('viewport' in args) { this.$viewport = $(args.viewport); }
-			else { this.$viewport = $(self.document); }
+			if ('jQviewport' in args) {
+				this.$viewport = args.viewport;
+			} else if ('viewport' in args) {
+				this.$viewport = $(args.viewport);
+			} else {
+				this.$viewport = $(self.document);
+			}
 
 			this.reposition();
 
@@ -122,6 +176,56 @@ define([ 'jquery' ], function($) {
 		}
 	}
 
+	/**
+	 * "get_at_metrics()" returns the metrics for the "at" node.
+	 *
+	 * @method
+	 * @param {Boolean} additional_metrics True to calculate additional metrics
+	 * @return {Object} Node metrics
+	 */
+	NodePosition.prototype.get_at_metrics = function(additional_metrics) {
+		if (additional_metrics == null) {
+			additional_metrics = false;
+		}
+
+		var _return = null;
+
+		if (this.$at != null) {
+			_return = _get_node_metrics(this.$at, additional_metrics);
+		}
+
+		return _return;
+	}
+
+	/**
+	 * "get_my_metrics()" returns the metrics for the "my" node.
+	 *
+	 * @method
+	 * @param {Boolean} additional_metrics True to calculate additional metrics
+	 * @return {Object} Node metrics
+	 */
+	NodePosition.prototype.get_my_metrics = function(additional_metrics) {
+		if (additional_metrics == null) {
+			additional_metrics = false;
+		}
+
+		var _return = null;
+
+		if (this.$my != null) {
+			_return = _get_node_metrics(this.$my, additional_metrics);
+		}
+
+		return _return;
+	}
+
+	/**
+	 * Returns the offset information for the "at" node based on the "my" node.
+	 *
+	 * @method
+	 * @param {Object} my_metrics "my" metrics
+	 * @param {Object} at_metrics "at" metrics
+	 * @return {Object} Offset x and y coordinates
+	 */
 	NodePosition.prototype.get_reference_offset = function(my_metrics, at_metrics) {
 		var x, y;
 
@@ -165,11 +269,7 @@ define([ 'jquery' ], function($) {
 			x = viewport_width - my_metrics.width;
 		}
 
-		if (x < 0) {
-			x = 0;
-		} else {
-			x = Math.floor(x);
-		}
+		x = ((x < 0) ? 0 : x);
 
 		y += at_metrics.top;
 
@@ -195,30 +295,35 @@ define([ 'jquery' ], function($) {
 			y = viewport_height - my_metrics.height;
 		}
 
-		if (y < 0) {
-			y = 0;
-		} else {
-			y = Math.floor(y);
-		}
+		y = ((y < 0) ? 0 : y);
 
 		return { x: x, y: y };
 	}
 
+	/**
+	 * Returns the offset information for the "at" node based on the "my" node.
+	 *
+	 * @method
+	 * @param {Object} my_metrics "my" metrics
+	 * @param {Object} at_metrics "at" metrics
+	 */
 	NodePosition.prototype.reposition = function(classname) {
-		var my_metrics = _get_node_metrics(this.$my);
-		var at_metrics = _get_node_metrics(this.$at, true);
+		if (this.$at != null && this.$my != null) {
+			var my_metrics = _get_node_metrics(this.$my);
+			var at_metrics = _get_node_metrics(this.$at, true);
 
-		this.$my.css({
-			position: 'absolute',
-			margin: 0
-		});
+			this.$my.css({
+				position: 'absolute',
+				margin: 0
+			});
 
-		my_offset = this.get_reference_offset(my_metrics, at_metrics);
+			my_offset = this.get_reference_offset(my_metrics, at_metrics);
 
-		this.$my.css({
-			top: my_offset.y + 'px',
-			left: my_offset.x + 'px'
-		});
+			this.$my.css({
+				top: my_offset.y + 'px',
+				left: my_offset.x + 'px'
+			});
+		}
 	}
 
 	return NodePosition;
