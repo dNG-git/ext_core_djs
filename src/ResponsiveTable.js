@@ -1,11 +1,11 @@
 //j// BOF
 
-/* -------------------------------------------------------------------------
-direct PAS
-Python Application Services
+/*
+direct JavaScript
+All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?pas;http;js
+https://www.direct-netware.de/redirect?js;djs
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -15,7 +15,7 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
 #echo(jsDjsVersion)#
 #echo(__FILEPATH__)#
-------------------------------------------------------------------------- */
+*/
 
 /**
  * @module ResponsiveTable
@@ -28,11 +28,15 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	 * @param {Object} args Arguments to initialize a given ResponsiveTable
 	 */
 	function ResponsiveTable(args) {
+		if (args === undefined || (!('id' in args))) {
+			throw new Error('Missing required argument');
+		}
+
 		this.$responsive_table = null;
 		this.responsive_table_class = null;
 
 		// TODO: Rename "display-table" to "displaytable" if that's available
-		if ('id' in args && 'display-table' in Modernizr && Modernizr['display-table']) {
+		if ('display-table' in Modernizr && Modernizr['display-table']) {
 			this.$responsive_table = $("#" + args.id);
 
 			if ('ResponsiveTable_class' in args) {
@@ -74,7 +78,10 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	 * @param {String} classname CSS class name
 	 */
 	ResponsiveTable.prototype.set_responsive_table_class = function(classname) {
-		this.$responsive_table.removeClass(this.responsive_table_class).addClass(classname);
+		if (this.$responsive_table != null) {
+			this.$responsive_table.removeClass(this.responsive_table_class).addClass(classname);
+		}
+
 		this.responsive_table_class = classname;
 	}
 

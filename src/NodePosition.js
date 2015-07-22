@@ -1,11 +1,11 @@
 //j// BOF
 
-/* -------------------------------------------------------------------------
-direct PAS
-Python Application Services
+/*
+direct JavaScript
+All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?pas;http;js
+https://www.direct-netware.de/redirect?js;djs
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -15,7 +15,7 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
 #echo(jsDjsVersion)#
 #echo(__FILEPATH__)#
-------------------------------------------------------------------------- */
+*/
 
 /**
  * @module NodePosition
@@ -28,6 +28,7 @@ define([ 'jquery' ], function($) {
 	 * @function
 	 * @param {Object} $node jQuery node instance
 	 * @param {Boolean} additional_metrics True to calculate additional metrics
+	 * @return {Object} Node metrics
 	 */
 	function _get_hidden_node_metrics($node, additional_metrics) {
 		var display_value = $node.css('display');
@@ -78,6 +79,7 @@ define([ 'jquery' ], function($) {
 	 * @function
 	 * @param {Object} $node jQuery node instance
 	 * @param {Boolean} additional_metrics True to calculate additional metrics
+	 * @return {Object} Node metrics
 	 */
 	function _get_node_metrics($node, additional_metrics) {
 		if (additional_metrics == null) {
@@ -119,11 +121,14 @@ define([ 'jquery' ], function($) {
 	 * @param {Object} args Arguments to initialize a given NodePosition
 	 */
 	function NodePosition(args) {
+		if (args === undefined) {
+			throw new Error('Missing required argument');
+		}
+
 		this.$at = null;
 		this.at_reference_configuration = { x: 'center', y: 'bottom' };
 		this.$my = null;
 		this.my_reference_configuration = { x: 'center', y: 'top' };
-		this.$viewport = null;
 
 		if ('at_id' in args) {
 			this.$at = $("#" + args.at_id);
@@ -137,43 +142,45 @@ define([ 'jquery' ], function($) {
 			this.$my = args.jQmy;
 		}
 
-		if (this.$at != null && this.$my != null) {
-			if ('at_reference' in args) {
-				var at_reference_values = args.at_reference.split(' ');
-
-				if (at_reference_values.length > 1) {
-					this.at_reference_configuration.y = at_reference_values[0];
-					this.at_reference_configuration.x = at_reference_values[1];
-				}
-			}
-
-			if ('my_reference' in args) {
-				var my_reference_values = args.my_reference.split(' ');
-
-				if (my_reference_values.length > 1) {
-					this.my_reference_configuration.y = my_reference_values[0];
-					this.my_reference_configuration.x = my_reference_values[1];
-				}
-			}
-
-			if ('jQviewport' in args) {
-				this.$viewport = args.viewport;
-			} else if ('viewport' in args) {
-				this.$viewport = $(args.viewport);
-			} else {
-				this.$viewport = $(self.document);
-			}
-
-			this.reposition();
-
-			var _this = this;
-
-			$(self).on('resize', function() {
-				if (_this.$my.attr('display') != 'none') {
-					_this.reposition();
-				}
-			});
+		if (this.$my == null) {
+			throw new Error('Missing required argument');
 		}
+
+		if ('at_reference' in args) {
+			var at_reference_values = args.at_reference.split(' ');
+
+			if (at_reference_values.length > 1) {
+				this.at_reference_configuration.y = at_reference_values[0];
+				this.at_reference_configuration.x = at_reference_values[1];
+			}
+		}
+
+		if ('my_reference' in args) {
+			var my_reference_values = args.my_reference.split(' ');
+
+			if (my_reference_values.length > 1) {
+				this.my_reference_configuration.y = my_reference_values[0];
+				this.my_reference_configuration.x = my_reference_values[1];
+			}
+		}
+
+		if ('jQviewport' in args) {
+			this.$viewport = args.viewport;
+		} else if ('viewport' in args) {
+			this.$viewport = $(args.viewport);
+		} else {
+			this.$viewport = $(self.document);
+		}
+
+		this.reposition();
+
+		var _this = this;
+
+		$(self).on('resize', function() {
+			if (_this.$my.attr('display') != 'none') {
+				_this.reposition();
+			}
+		});
 	}
 
 	/**
@@ -184,7 +191,7 @@ define([ 'jquery' ], function($) {
 	 * @return {Object} Node metrics
 	 */
 	NodePosition.prototype.get_at_metrics = function(additional_metrics) {
-		if (additional_metrics == null) {
+		if (additional_metrics === undefined) {
 			additional_metrics = false;
 		}
 
@@ -205,17 +212,11 @@ define([ 'jquery' ], function($) {
 	 * @return {Object} Node metrics
 	 */
 	NodePosition.prototype.get_my_metrics = function(additional_metrics) {
-		if (additional_metrics == null) {
+		if (additional_metrics === undefined) {
 			additional_metrics = false;
 		}
 
-		var _return = null;
-
-		if (this.$my != null) {
-			_return = _get_node_metrics(this.$my, additional_metrics);
-		}
-
-		return _return;
+		return _get_node_metrics(this.$my, additional_metrics);
 	}
 
 	/**
@@ -308,7 +309,7 @@ define([ 'jquery' ], function($) {
 	 * @param {Object} at_metrics "at" metrics
 	 */
 	NodePosition.prototype.reposition = function(classname) {
-		if (this.$at != null && this.$my != null) {
+		if (this.$at != null) {
 			var my_metrics = _get_node_metrics(this.$my);
 			var at_metrics = _get_node_metrics(this.$at, true);
 

@@ -1,11 +1,11 @@
 //j// BOF
 
-/* -------------------------------------------------------------------------
-direct PAS
-Python Application Services
+/*
+direct JavaScript
+All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?pas;http;js
+https://www.direct-netware.de/redirect?js;djs
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -15,12 +15,29 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
 #echo(jsDjsVersion)#
 #echo(__FILEPATH__)#
-------------------------------------------------------------------------- */
+*/
 
+/**
+ * @module Spinner
+ */
 define([ 'jquery' ], function($) {
+	/**
+	 * The "Spinner" instance shows and animates a 2D canvas based spinning
+	 * circle indicating determinated or indeterminated progress.
+	 *
+	 * @class Spinner
+	 * @param {Object} args Arguments to initialize a given Spinner
+	 */
 	function Spinner(args) {
+		if (args === undefined
+		    || (!('id' in args))
+		    || (!('width' in args))
+		    || (!('height' in args))
+		   ) {
+			throw new Error('Missing required arguments');
+		}
+
 		this.segments = 12;
-		this.$canvas = null;
 		this.canvas_height = 0;
 		this.canvas_width = 0;
 		this.id = null;
@@ -29,47 +46,63 @@ define([ 'jquery' ], function($) {
 		this.value = 0;
 		this.visible = false;
 
-		if ('id' in args && 'width' in args && 'height' in args) {
-			var $canvas_parent = $("#" + args.id);
+		var $canvas_parent = $("#" + args.id);
 
-			this.$canvas = $('<canvas id="' + args.id + '_djs_spinner_canvas" width="' + args.width + '" height="' + args.height + '" />');
-			$canvas_parent.append(this.$canvas);
+		this.$canvas = $('<canvas id="' + args.id + '_djs_spinner_canvas" width="' + args.width + '" height="' + args.height + '" />');
+		$canvas_parent.append(this.$canvas);
 
-			if (!('getContext' in this.$canvas.get(0))) {
-				throw 'Canvas not supported';
-			}
-
-			if ('Spinner_class' in args) {
-				this.$canvas.addClass(args.Spinner_class);
-			} else if ($canvas_parent.data('djs-ui-spinner-class') != undefined) {
-				this.$canvas.addClass($canvas_parent.data('djs-ui-spinner-class'));
-			} else if ('djs_config' in self && 'Spinner_class' in self.djs_config) {
-				this.$canvas.addClass(self.djs_config.Spinner_class);
-			} else {
-				this.$canvas.addClass('djs-ui-Spinner');
-			}
-
-			if ('Spinner_style' in args) {
-				this.$canvas.css(args.Spinner_style);
-			}
-
-			if ('value' in args) {
-				this.indeterminate = false;
-				this.set_value(args['value']);
-			}
-
-			this.$canvas.data('djs-spinner', this);
+		if (!('getContext' in this.$canvas.get(0))) {
+			throw 'Canvas not supported';
 		}
+
+		if ('Spinner_class' in args) {
+			this.$canvas.addClass(args.Spinner_class);
+		} else if ($canvas_parent.data('djs-ui-spinner-class') != undefined) {
+			this.$canvas.addClass($canvas_parent.data('djs-ui-spinner-class'));
+		} else if ('djs_config' in self && 'Spinner_class' in self.djs_config) {
+			this.$canvas.addClass(self.djs_config.Spinner_class);
+		} else {
+			this.$canvas.addClass('djs-ui-Spinner');
+		}
+
+		if ('Spinner_style' in args) {
+			this.$canvas.css(args.Spinner_style);
+		}
+
+		if ('value' in args) {
+			this.indeterminate = false;
+			this.set_value(args['value']);
+		}
+
+		this.$canvas.data('djs-spinner', this);
 	}
 
+	/**
+	 * Returns the current progress value.
+	 *
+	 * @method
+	 * @return {Number} Progress value
+	 */
 	Spinner.prototype.get_value = function() {
 		return this.value;
 	}
 
+	/**
+	 * Sets the number of segments the spinner has.
+	 *
+	 * @method
+	 * @param {Number} segments Number of segments
+	 */
 	Spinner.prototype.set_segments = function(segments) {
 		this.segments = segments;
 	}
 
+	/**
+	 * Sets the current progress value.
+	 *
+	 * @method
+	 * @param {Number} value Progress value
+	 */
 	Spinner.prototype.set_value = function(value) {
 		this.value = value;
 
@@ -78,6 +111,11 @@ define([ 'jquery' ], function($) {
 		}
 	}
 
+	/**
+	 * Shows the spinner canvas and starts animating it.
+	 *
+	 * @method
+	 */
 	Spinner.prototype.show = function() {
 		this.$canvas.show();
 		this.visible = true;
@@ -88,6 +126,13 @@ define([ 'jquery' ], function($) {
 		this.$canvas.queue('fx', this._paint);
 	}
 
+	/**
+	 * Repaints the spinner canvas.
+	 *
+	 * @method
+	 * @param {Function} next jQuery function to call that will dequeue the next
+	 *                        item
+	 */
 	Spinner.prototype._paint = function(next) {
 		var _this = $(this).data('djs-spinner');
 

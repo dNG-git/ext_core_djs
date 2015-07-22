@@ -1,11 +1,11 @@
 //j// BOF
 
-/* -------------------------------------------------------------------------
-direct PAS
-Python Application Services
+/*
+direct JavaScript
+All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?pas;http;js
+https://www.direct-netware.de/redirect?js;djs
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -15,7 +15,7 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
 #echo(jsDjsVersion)#
 #echo(__FILEPATH__)#
-------------------------------------------------------------------------- */
+*/
 
 /**
  * @module FixableBlock
@@ -28,47 +28,45 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 	 * @param {Object} args Arguments to initialize a given FixableBlock
 	 */
 	function FixableBlock(args) {
-		this.$fixable_block = null;
-		this.$fixable_block_dummy = null;
+		if (args === undefined || (!('id' in args))) {
+			throw new Error('Missing required argument');
+		}
+
 		this.fixable_block_enabled = true;
 		this.fixable_block_fixed = false;
-		this.fixable_block_fixed_class = null;
 		this.fixable_block_metrics = null;
-		this.fixable_block_node_position = null;
 
-		if ('id' in args) {
-			this.$fixable_block = $("#" + args.id);
+		this.$fixable_block = $("#" + args.id);
 
-			if ('FixableBlock_fixed_class' in args) {
-				this.fixable_block_fixed_class = args.FixableBlock_fixed_class;
-			} else if (this.$fixable_block.data('djs-ui-fixableblock-fixed-class') != undefined) {
-				this.fixable_block_fixed_class = this.$fixable_block.data('djs-ui-fixableblock-fixed-class');
-			} else if ('djs_config' in self && 'FixableBlock_fixed_class' in self.djs_config) {
-				this.fixable_block_fixed_class = self.djs_config.FixableBlock_fixed_class;
-			} else {
-				this.fixable_block_fixed_class = 'djs-ui-FixableBlock-fixed';
-			}
-
-			this.fixable_block_node_position = new NodePosition({ jQmy: this.$fixable_block });
-
-			this.$fixable_block_dummy = $("<div style='display: none; visibility: hidden' />").insertAfter(this.$fixable_block);
-			this.recalculate_and_update();
-			this.update_node_css();
-
-			var _this = this;
-
-			$(self).on('resize', function() {
-				if (_this.$fixable_block.attr('display') != 'none') {
-					_this.recalculate_and_update();
-				}
-			});
-
-			$(self).on('scroll', function() {
-				if (_this.$fixable_block.attr('display') != 'none') {
-					_this.update_fixed_state();
-				}
-			});
+		if ('FixableBlock_fixed_class' in args) {
+			this.fixable_block_fixed_class = args.FixableBlock_fixed_class;
+		} else if (this.$fixable_block.data('djs-ui-fixableblock-fixed-class') != undefined) {
+			this.fixable_block_fixed_class = this.$fixable_block.data('djs-ui-fixableblock-fixed-class');
+		} else if ('djs_config' in self && 'FixableBlock_fixed_class' in self.djs_config) {
+			this.fixable_block_fixed_class = self.djs_config.FixableBlock_fixed_class;
+		} else {
+			this.fixable_block_fixed_class = 'djs-ui-FixableBlock-fixed';
 		}
+
+		this.fixable_block_node_position = new NodePosition({ jQmy: this.$fixable_block });
+
+		this.$fixable_block_dummy = $("<div style='display: none; visibility: hidden' />").insertAfter(this.$fixable_block);
+		this.recalculate_and_update();
+		this.update_node_css();
+
+		var _this = this;
+
+		$(self).on('resize', function() {
+			if (_this.$fixable_block.attr('display') != 'none') {
+				_this.recalculate_and_update();
+			}
+		});
+
+		$(self).on('scroll', function() {
+			if (_this.$fixable_block.attr('display') != 'none') {
+				_this.update_fixed_state();
+			}
+		});
 	}
 
 	/**
@@ -119,7 +117,7 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 	 * @param {Boolean} enabled False to disable
 	 */
 	FixableBlock.prototype.set_fixable_block_enabled = function(enabled) {
-		if (enabled == undefined) {
+		if (enabled === undefined) {
 			enabled = true;
 		}
 

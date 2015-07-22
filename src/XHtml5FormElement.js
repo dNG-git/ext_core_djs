@@ -1,11 +1,11 @@
 //j// BOF
 
-/* -------------------------------------------------------------------------
-direct PAS
-Python Application Services
+/*
+direct JavaScript
+All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?pas;http;js
+https://www.direct-netware.de/redirect?js;djs
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -15,7 +15,7 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
 #echo(jsDjsVersion)#
 #echo(__FILEPATH__)#
-------------------------------------------------------------------------- */
+*/
 
 define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	var tabindex_count = 1;
@@ -29,34 +29,29 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	}
 
 	function XHtml5FormElement(args) {
-		this.focused_class = null;
-		this.focused_duration = null;
-		this.id = null;
-		this.$node = null;
-		this.temporarily_disabled_duration = null;
-		this.type = null;
-
-		if ('id' in args && 'type' in args) {
-			if (!('_djs_XHtml5FormElement_enable_input' in self)) {
-				self._djs_XHtml5FormElement_enable_input = function(id) {
-					enable_input(id);
-				};
-			}
-
-			if (!('_djs_XHtml5FormElement_unfocus' in self)) {
-				self._djs_XHtml5FormElement_unfocus = function(id, focused_class) {
-					unfocus(id, focused_class);
-				};
-			}
-
-			this.focused_class = (('djs_config' in self && 'XHtml5FormElement_focused_class' in self.djs_config) ? self.djs_config.XHtml5FormElement_focused_class : 'djs-ui-XHtml5FormElement-input-focus');
-			this.focused_duration = (('djs_config' in self && 'XHtml5FormElement_focused_duration' in self.djs_config) ? self.djs_config.XHtml5FormElement_focused_duration : 0);
-			this.temporarily_disabled_duration = (('djs_config' in self && 'XHtml5FormElement_temporarily_disabled_duration' in self.djs_config) ? self.djs_config.XHtml5FormElement_temporarily_disabled_duration : 3000);
-
-			this.id = args.id;
-			this.$node = $("#" + args.id);
-			this.type = args.type;
+		if (args === undefined || (!('id' in args)) || (!('type' in args))) {
+			throw new Error('Missing required arguments');
 		}
+
+		if (!('_djs_XHtml5FormElement_enable_input' in self)) {
+			self._djs_XHtml5FormElement_enable_input = function(id) {
+				enable_input(id);
+			};
+		}
+
+		if (!('_djs_XHtml5FormElement_unfocus' in self)) {
+			self._djs_XHtml5FormElement_unfocus = function(id, focused_class) {
+				unfocus(id, focused_class);
+			};
+		}
+
+		this.id = args.id;
+		this.$node = $("#" + args.id);
+		this.type = args.type;
+
+		this.focused_class = (('djs_config' in self && 'XHtml5FormElement_focused_class' in self.djs_config) ? self.djs_config.XHtml5FormElement_focused_class : 'djs-ui-XHtml5FormElement-input-focus');
+		this.focused_duration = (('djs_config' in self && 'XHtml5FormElement_focused_duration' in self.djs_config) ? self.djs_config.XHtml5FormElement_focused_duration : 0);
+		this.temporarily_disabled_duration = (('djs_config' in self && 'XHtml5FormElement_temporarily_disabled_duration' in self.djs_config) ? self.djs_config.XHtml5FormElement_temporarily_disabled_duration : 3000);
 
 		var _this = this;
 
@@ -86,7 +81,11 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	XHtml5FormElement.prototype.disable_input_temporarily = function(event, duration) {
 		var _return = true;
 
-		if (duration == null) {
+		if (event === undefined) {
+			throw new Error('Missing required arguments');
+		}
+
+		if (duration === undefined) {
 			duration = this.temporarily_disabled_duration;
 		}
 
@@ -105,7 +104,7 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	}
 
 	XHtml5FormElement.prototype.focus = function(duration) {
-		if (duration == null) {
+		if (duration === undefined) {
 			duration = this.focused_duration;
 		}
 
