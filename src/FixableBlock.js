@@ -80,7 +80,7 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 
 		if (is_fixed) {
 			var css_attributes = {
-				'position': 'initial',
+				'position': 'static',
 				'width': 'auto',
 				'top': 'initial',
 				'left': 'initial'
@@ -170,7 +170,7 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 	 */
 	FixableBlock.prototype.update_node_css = function() {
 		var css_attributes = {
-			'position': 'initial',
+			'position': 'static',
 			'width': 'auto',
 			'top': 'initial',
 			'left': 'initial'
