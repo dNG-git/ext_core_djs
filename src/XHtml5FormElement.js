@@ -34,15 +34,11 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 		}
 
 		if (!('_djs_XHtml5FormElement_enable_input' in self)) {
-			self._djs_XHtml5FormElement_enable_input = function(id) {
-				enable_input(id);
-			};
+			self._djs_XHtml5FormElement_enable_input = enable_input;
 		}
 
 		if (!('_djs_XHtml5FormElement_unfocus' in self)) {
-			self._djs_XHtml5FormElement_unfocus = function(id, focused_class) {
-				unfocus(id, focused_class);
-			};
+			self._djs_XHtml5FormElement_unfocus = unfocus;
 		}
 
 		this.id = args.id;
