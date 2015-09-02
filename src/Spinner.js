@@ -20,20 +20,17 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 /**
  * @module Spinner
  */
-define([ 'jquery' ], function($) {
+define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
 	/**
 	 * The "Spinner" instance shows and animates a 2D canvas based spinning
-	 * circle indicating determinated or indeterminated progress.
+	 * circle indicating determinated or indeterminated progress. It falls
+	 * back to a progress bar in case the canvas tag is not supported.
 	 *
 	 * @class Spinner
 	 * @param {Object} args Arguments to initialize a given Spinner
 	 */
 	function Spinner(args) {
-		if (args === undefined
-		    || (!('id' in args))
-		    || (!('width' in args))
-		    || (!('height' in args))
-		   ) {
+		if (args === undefined || ((!('id' in args)) && (!('parent_id' in args)))) {
 			throw new Error('Missing required arguments');
 		}
 
@@ -42,17 +39,37 @@ define([ 'jquery' ], function($) {
 		this.canvas_width = 0;
 		this.id = null;
 		this.indeterminate = true;
+		this.progress_bar = null;
 		this.spinner_position = 0;
 		this.value = 0;
 		this.visible = false;
 
-		var $canvas_parent = $("#" + args.id);
+		var $canvas_parent = null;
 
-		this.$canvas = $('<canvas id="' + args.id + '_djs_spinner_canvas" width="' + args.width + '" height="' + args.height + '" />');
-		$canvas_parent.append(this.$canvas);
+		if ('id' in args) {
+			this.$canvas = $("#" + args.id);
+			$canvas_parent = this.$progress_bar.parent();
+
+			this.visible = this.$progress_bar.is(':hidden');
+
+			if (this.visible) {
+				var css_visibility = this.$progress_bar.css('visibility');
+
+				if (typeof css_visibility == 'string' && css_visibility.toLowerCase() == 'hidden') {
+					this.visible = false;
+				}
+			}
+		} else if ((!('width' in args)) || (!('height' in args))) {
+			throw new Error('Missing required arguments');
+		} else {
+			$canvas_parent = $("#" + args.parent_id);
+
+			this.$canvas = $('<canvas id="' + args.parent_id + '_djs_spinner_canvas" width="' + args.width + '" height="' + args.height + '" style="visibility:hidden"></canvas>');
+			$canvas_parent.append(this.$canvas);
+		}
 
 		if (!('getContext' in this.$canvas.get(0))) {
-			throw 'Canvas not supported';
+			this.progress_bar = new ProgressBar({ parent_id: args.id + "_djs_spinner_canvas" });
 		}
 
 		if ('Spinner_class' in args) {
@@ -74,7 +91,31 @@ define([ 'jquery' ], function($) {
 			this.set_value(args['value']);
 		}
 
-		this.$canvas.data('djs-spinner', this);
+		if (this.progress_bar == null) {
+			this.$canvas.data('djs-spinner', this);
+		} else {
+			this.$canvas.addClass('djs-ui-Spinner-fallback');
+		}
+	}
+
+	/**
+	 * Returns the spinner jQuery instance.
+	 *
+	 * @method
+	 * @return {object} jQuery instance
+	 */
+	Spinner.prototype.get_jQnode = function() {
+		return ((this.progress_bar == null) ? this.$canvas : this.progress_bar.get_jQnode());
+	}
+
+	/**
+	 * Returns the number of segments the spinner has.
+	 *
+	 * @method
+	 * @return {Number} Number of segments
+	 */
+	Spinner.prototype.get_segments = function() {
+		return this.segments;
 	}
 
 	/**
@@ -84,7 +125,7 @@ define([ 'jquery' ], function($) {
 	 * @return {Number} Progress value
 	 */
 	Spinner.prototype.get_value = function() {
-		return this.value;
+		return ((this.progress_bar == null) ? this.value : this.progress_bar.get_value());
 	}
 
 	/**
@@ -104,10 +145,16 @@ define([ 'jquery' ], function($) {
 	 * @param {Number} value Progress value
 	 */
 	Spinner.prototype.set_value = function(value) {
-		this.value = value;
+		if (this.progress_bar == null) {
+			this.indeterminate = (value == null);
+			this.spinner_position = 0;
+			this.value = value;
 
-		if (this.visible) {
-			this.$canvas.queue('fx', this._paint).dequeue();
+			if (this.visible) {
+				this.$canvas.finish().queue(this._paint);
+			}
+		} else {
+			this.progress_bar.set_value(value);
 		}
 	}
 
@@ -117,13 +164,18 @@ define([ 'jquery' ], function($) {
 	 * @method
 	 */
 	Spinner.prototype.show = function() {
-		this.$canvas.show();
-		this.visible = true;
+		this.$canvas.css('visibility', 'visible');
 
-		this.canvas_height = this.$canvas.height();
-		this.canvas_width = this.$canvas.width();
+		if (this.progress_bar == null) {
+			this.visible = true;
 
-		this.$canvas.queue('fx', this._paint);
+			this.canvas_height = this.$canvas.height();
+			this.canvas_width = this.$canvas.width();
+
+			this.$canvas.queue(this._paint);
+		} else {
+			this.progress_bar.show();
+		}
 	}
 
 	/**
@@ -153,10 +205,10 @@ define([ 'jquery' ], function($) {
 			}
 		} else {
 			if (_this.value >= 0 && _this.value <= 100) {
-				indicator_value = _this.value;
+				indicator_value = (_this.value / 100);
 			}
 
-			if ((indicator_value / 100) < indicator_fade_percentage) {
+			if (indicator_value < indicator_fade_percentage) {
 				indicator_intensity = 0.5;
 			}
 		}
@@ -202,7 +254,7 @@ define([ 'jquery' ], function($) {
 				indicator_intensity = 1 - (indicator_fade_percentage * indicator_fade_multiplicator);
 
 				ctx.strokeStyle = 'rgba(0, 0, 0, ' + indicator_intensity + ')';
-			} else if (indicator_intensity > 0.5 && indicator_value < (((1 + segment) / _this.segments) * 100)) {
+			} else if (indicator_intensity > 0.5 && indicator_value < (indicator_fade_percentage * segment)) {
 				indicator_intensity = 0.5;
 
 				ctx.strokeStyle = 'rgba(0, 0, 0, ' + indicator_intensity + ')';
@@ -217,8 +269,9 @@ define([ 'jquery' ], function($) {
 			}
 
 			_this.$canvas.delay(100).queue('fx', _this._paint);
-			next();
 		}
+
+		next();
 	}
 
 	return Spinner;
