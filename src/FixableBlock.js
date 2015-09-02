@@ -32,6 +32,7 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 			throw new Error('Missing required argument');
 		}
 
+		this.event_id = Math.random().toString();
 		this.fixable_block_enabled = true;
 		this.fixable_block_fixed = false;
 		this.fixable_block_metrics = null;
@@ -50,23 +51,33 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 
 		this.fixable_block_node_position = new NodePosition({ jQmy: this.$fixable_block });
 
-		this.$fixable_block_dummy = $("<div style='display: none; visibility: hidden' />").insertAfter(this.$fixable_block);
+		this.$fixable_block_dummy = $("<div style='display: none; visibility: hidden'></div>").insertAfter(this.$fixable_block);
 		this.recalculate_and_update();
 		this.update_node_css();
 
 		var _this = this;
 
-		$(self).on('resize', function() {
+		$(self).on("resize." + this.event_id, function() {
 			if (_this.$fixable_block.attr('display') != 'none') {
 				_this.recalculate_and_update();
 			}
 		});
 
-		$(self).on('scroll', function() {
+		$(self).on("scroll." + this.event_id, function() {
 			if (_this.$fixable_block.attr('display') != 'none') {
 				_this.update_fixed_state();
 			}
 		});
+	}
+
+	/**
+	 * Destroys the fixable block instance and its attached event listeners.
+	 *
+	 * @method
+	 */
+	NodePosition.prototype.destroy = function() {
+		$(self).off("resize." + this.event_id);
+		$(self).off("scroll." + this.event_id);
 	}
 
 	/**
@@ -184,7 +195,7 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 		}
 
 		this.$fixable_block.css(css_attributes);
-		this.$fixable_block_dummy.css('display', ((this.fixable_block_fixed) ? 'block' : 'none'));
+		this.$fixable_block_dummy.css('display', (this.fixable_block_fixed ? 'block' : 'none'));
 	}
 
 	return FixableBlock;

@@ -127,6 +127,7 @@ define([ 'jquery' ], function($) {
 
 		this.$at = null;
 		this.at_reference_configuration = { x: 'center', y: 'bottom' };
+		this.event_id = Math.random().toString();
 		this.$my = null;
 		this.my_reference_configuration = { x: 'center', y: 'top' };
 
@@ -176,11 +177,23 @@ define([ 'jquery' ], function($) {
 
 		var _this = this;
 
-		$(self).on('resize', function() {
+		$(self).on("resize." + this.event_id, function() {
 			if (_this.$my.attr('display') != 'none') {
 				_this.reposition();
 			}
 		});
+	}
+
+	/**
+	 * Destroys the node position instance and its attached event listeners.
+	 *
+	 * @method
+	 */
+	NodePosition.prototype.destroy = function() {
+		this.$at = null;
+		this.$my = null;
+
+		$(self).off("resize." + this.event_id);
 	}
 
 	/**
