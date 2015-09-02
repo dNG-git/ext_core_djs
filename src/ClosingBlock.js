@@ -46,6 +46,55 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 	}
 
 	/**
+	 * "ClosingBlock" is a spinner animated block that closes itself after a
+	 * given timeout.
+	 *
+	 * @class ClosingBlock
+	 * @param {Object} args Arguments to initialize a given ClosingBlock
+	 */
+	function ClosingBlock(args) {
+		if (args === undefined
+		    || (!('id' in args))
+		    || (!('width' in args))
+		    || (!('height' in args))
+		    || (!('timeout' in args))
+		   ) {
+			throw new Error('Missing required arguments');
+		}
+
+		if (!('_djs_ClosingBlock_close' in self)) {
+			self._djs_ClosingBlock_close = close;
+		}
+
+		this.id = args.id;
+		this.timeout = args.timeout * 10;
+
+		var spinner_args = { parent_id: args.id,
+		                     width: args.width,
+		                     height: args.height,
+		                     value: 0
+		                   };
+
+		$.each(args, function(key, value) {
+			if (key.indexOf('Spinner_') === 0) {
+				spinner_args[key] = value;
+			}
+		});
+
+		var $node = $("#" + args.id);
+		var spinner = new Spinner(spinner_args);
+
+		var $spinner = spinner.get_jQnode();
+		$spinner.wrap($('<a href="javascript:self._djs_ClosingBlock_close(\'' + args.id + '\')"></a>'));
+
+		spinner.show();
+
+		$node.data('djs-closing-block', this);
+		$node.data('djs-closing-block-spinner', spinner);
+		$node.delay(this.timeout).queue(this._tick);
+	}
+
+	/**
 	 * The "_tick() " helper function is used to increase the spinner value.
 	 *
 	 * @function
@@ -54,8 +103,11 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 	 * @param {String} id Block ID to be closed
 	 * @param {Number} timeout Timeout value for each tick callback
 	 */
-	function _tick(id, timeout) {
-		var ticked_spinner = $("#" + id + "_djs_spinner_canvas").data('djs-spinner');
+	ClosingBlock.prototype._tick = function(next) {
+		var $node = $(this);
+		var _this = $node.data('djs-closing-block');
+
+		var ticked_spinner = $node.data('djs-closing-block-spinner');
 
 		if (ticked_spinner != undefined) {
 			var spinner_value = ticked_spinner.get_value();
@@ -63,57 +115,15 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 
 			if (spinner_value <= 100) {
 				ticked_spinner.set_value(spinner_value);
-				self.setTimeout('self._djs_ClosingBlock_tick("' + id + '", ' + timeout + ')', timeout);
+				$node.delay(_this.timeout).queue(_this._tick);
 			} else {
-				close(id);
+				close(_this.id);
 			}
 		}
+
+		next();
 	}
 
-	/**
-	 * "ClosingBlock" is a spinner animated block that closes itself after a
-	 * given timeout.
-	 *
-	 * @class ClosingBlock
-	 * @param {Object} args Arguments to initialize a given ClosingBlock
-	 */
-	function ClosingBlock(args) {
-		if ('id' in args && 'width' in args && 'height' in args && 'timeout' in args) {
-			if (!('_djs_ClosingBlock_close' in self)) {
-				self._djs_ClosingBlock_close = function(id) {
-					close(id);
-				};
-			}
-
-			if (!('_djs_ClosingBlock_tick' in self)) {
-				self._djs_ClosingBlock_tick = function(id, timeout) {
-					_tick(id, timeout);
-				};
-			}
-
-			var spinner_args = args;
-			spinner_args['value'] = 0;
-			var $node = $("#" + args.id);
-
-			try {
-				var spinner = new Spinner(spinner_args);
-
-				var $spinner = $("#" + args.id + "_djs_spinner_canvas");
-				$node.append($('<a href="javascript:self._djs_ClosingBlock_close(\'' + args.id + '\')" />').append($spinner.detach()));
-				spinner.show();
-
-				var timeout = args.timeout * 10;
-				self.setTimeout('self._djs_ClosingBlock_tick("' + args.id + '", ' + timeout + ')', timeout);
-			} catch (handled_exception) {
-				$close_link = $('<a href="javascript:self._djs_ClosingBlock_close(\'' + args.id + '\')">x</a>');
-				if ('Spinner_class' in args) { $close_link.addClass(args.Spinner_class); }
-				if ('Spinner_style' in args) { $close_link.css(args.Spinner_style); }
-				$node.append($close_link);
-
-				self.setTimeout('self._djs_ClosingBlock_close("' + args.id + '")', args.timeout * 1000);
-			}
-		}
-	}
 
 	return ClosingBlock;
 });
