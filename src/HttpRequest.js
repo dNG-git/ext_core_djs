@@ -75,6 +75,12 @@ define([ 'jquery' ], function($) {
 				throw new Error('URL is not defined');
 			}
 
+			query_string = this._prepare_query_string(('data' in args) ? args['data'] : '');
+
+			if (query_string.length > 0) {
+				args['data'] = query_string;
+			}
+
 			_return = $.ajax(args);
 
 			if (call_id != null) {
@@ -88,6 +94,17 @@ define([ 'jquery' ], function($) {
 		}
 
 		return _return;
+	}
+
+	/**
+	 * Prepares the query string.
+	 *
+	 * @method
+	 * @param {Object} args Query string arguments
+	 * @return {String} Prepared query string
+	 */
+	HttpRequest.prototype._prepare_query_string = function(args) {
+		return ((typeof args == 'string') ? args : $.param(args));
 	}
 
 	/**
