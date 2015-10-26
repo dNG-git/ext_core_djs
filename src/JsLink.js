@@ -1,11 +1,11 @@
 //j// BOF
 
 /*
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -13,7 +13,7 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(jsDjsVersion)#
+#echo(jsDjtVersion)#
 #echo(__FILEPATH__)#
 */
 
@@ -25,7 +25,8 @@ define([ 'jquery' ], function($) {
 	 * "JsLink" rewrites deactivated links if JavaScript is available.
 	 *
 	 * @class JsLink
-	 * @param {Object} args Arguments to initialize a given JsLink
+	 *
+	 * @param {object} args Arguments to initialize a given JsLink
 	 */
 	function JsLink(args) {
 		if (args === undefined || (!('id' in args))) {

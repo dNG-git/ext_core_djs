@@ -1,11 +1,11 @@
 //j// BOF
 
 /*
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -13,7 +13,7 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(jsDjsVersion)#
+#echo(jsDjtVersion)#
 #echo(__FILEPATH__)#
 */
 
@@ -21,13 +21,19 @@ https://www.direct-netware.de/redirect?licenses;mpl2
  * @module HttpRequest
  */
 define([ 'jquery' ], function($) {
-	var requests = { };
+	/**
+	 * Object holding currently active request promises.
+	 *
+	 * @static
+	 */
+	var _requests = { };
 
 	/**
 	 * "HttpRequest" is based on a jQuery wrapped XmlHttpRequest AJAX class.
 	 *
 	 * @class HttpRequest
-	 * @param {Object} args Arguments to initialize a given HttpRequest
+	 *
+	 * @param {object} args Arguments to initialize a given HttpRequest
 	 */
 	function HttpRequest(args) {
 		if (args === undefined) {
@@ -50,8 +56,10 @@ define([ 'jquery' ], function($) {
 	 * Calls the URL asynchronously by default.
 	 *
 	 * @method
-	 * @param {Object} args Arguments to override default call parameter
-	 * @return {Object} jQuery AJAX promise
+	 *
+	 * @param {object} args Arguments to override default call parameter
+	 *
+	 * @return {object} jQuery AJAX promise
 	 */
 	HttpRequest.prototype.call = function(args) {
 		var _return = null;
@@ -62,8 +70,8 @@ define([ 'jquery' ], function($) {
 
 		var call_id = (('id' in args) ? args.id : this.id);
 
-		if (call_id != null && call_id in requests) {
-			_return = requests[call_id];
+		if (call_id != null && call_id in _requests) {
+			_return = _requests[call_id];
 		} else {
 			args = this._prepare_request_args(args);
 
@@ -84,11 +92,11 @@ define([ 'jquery' ], function($) {
 			_return = $.ajax(args);
 
 			if (call_id != null) {
-				requests[call_id] = _return;
+				_requests[call_id] = _return;
 				var id = call_id;
 
 				_return.always(function() {
-					delete requests[id];
+					delete _requests[id];
 				});
 			}
 		}
@@ -100,8 +108,10 @@ define([ 'jquery' ], function($) {
 	 * Prepares the query string.
 	 *
 	 * @method
-	 * @param {Object} args Query string arguments
-	 * @return {String} Prepared query string
+	 *
+	 * @param {object} args Query string arguments
+	 *
+	 * @return {string} Prepared query string
 	 */
 	HttpRequest.prototype._prepare_query_string = function(args) {
 		return ((typeof args == 'string') ? args : $.param(args));
@@ -111,8 +121,10 @@ define([ 'jquery' ], function($) {
 	 * Prepares and extends the given request arguments.
 	 *
 	 * @method
-	 * @param {Object} args Base arguments
-	 * @return {Object} Prepared and extended arguments
+	 *
+	 * @param {object} args Base arguments
+	 *
+	 * @return {object} Prepared and extended arguments
 	 */
 	HttpRequest.prototype._prepare_request_args = function(args) {
 		return $.extend({ },

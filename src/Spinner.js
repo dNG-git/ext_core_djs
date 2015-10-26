@@ -1,11 +1,11 @@
 //j// BOF
 
 /*
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -13,21 +13,22 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(jsDjsVersion)#
+#echo(jsDjtVersion)#
 #echo(__FILEPATH__)#
 */
 
 /**
  * @module Spinner
  */
-define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
+define([ 'jquery', 'djt/ProgressBar.min' ], function($, ProgressBar) {
 	/**
 	 * The "Spinner" instance shows and animates a 2D canvas based spinning
 	 * circle indicating determinated or indeterminated progress. It falls
 	 * back to a progress bar in case the canvas tag is not supported.
 	 *
 	 * @class Spinner
-	 * @param {Object} args Arguments to initialize a given Spinner
+	 *
+	 * @param {object} args Arguments to initialize a given Spinner
 	 */
 	function Spinner(args) {
 		if (args === undefined || ((!('id' in args)) && (!('parent_id' in args)))) {
@@ -64,22 +65,22 @@ define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
 		} else {
 			$canvas_parent = $("#" + args.parent_id);
 
-			this.$canvas = $('<canvas id="' + args.parent_id + '_djs_spinner_canvas" width="' + args.width + '" height="' + args.height + '" style="visibility:hidden"></canvas>');
+			this.$canvas = $('<canvas id="' + args.parent_id + '_djt_spinner_canvas" width="' + args.width + '" height="' + args.height + '" style="visibility:hidden"></canvas>');
 			$canvas_parent.append(this.$canvas);
 		}
 
 		if (!('getContext' in this.$canvas.get(0))) {
-			this.progress_bar = new ProgressBar({ parent_id: args.id + "_djs_spinner_canvas" });
+			this.progress_bar = new ProgressBar({ parent_id: args.id + "_djt_spinner_canvas" });
 		}
 
 		if ('Spinner_class' in args) {
 			this.$canvas.addClass(args.Spinner_class);
-		} else if ($canvas_parent.data('djs-ui-spinner-class') != undefined) {
-			this.$canvas.addClass($canvas_parent.data('djs-ui-spinner-class'));
-		} else if ('djs_config' in self && 'Spinner_class' in self.djs_config) {
-			this.$canvas.addClass(self.djs_config.Spinner_class);
+		} else if ($canvas_parent.data('djt-ui-spinner-class') != undefined) {
+			this.$canvas.addClass($canvas_parent.data('djt-ui-spinner-class'));
+		} else if ('djt_config' in self && 'Spinner_class' in self.djt_config) {
+			this.$canvas.addClass(self.djt_config.Spinner_class);
 		} else {
-			this.$canvas.addClass('djs-ui-Spinner');
+			this.$canvas.addClass('djt-ui-Spinner');
 		}
 
 		if ('Spinner_style' in args) {
@@ -92,9 +93,9 @@ define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
 		}
 
 		if (this.progress_bar == null) {
-			this.$canvas.data('djs-spinner', this);
+			this.$canvas.data('djt-spinner', this);
 		} else {
-			this.$canvas.addClass('djs-ui-Spinner-fallback');
+			this.$canvas.addClass('djt-ui-Spinner-fallback');
 		}
 	}
 
@@ -102,6 +103,7 @@ define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
 	 * Returns the spinner jQuery instance.
 	 *
 	 * @method
+	 *
 	 * @return {object} jQuery instance
 	 */
 	Spinner.prototype.get_jQnode = function() {
@@ -112,7 +114,8 @@ define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
 	 * Returns the number of segments the spinner has.
 	 *
 	 * @method
-	 * @return {Number} Number of segments
+	 *
+	 * @return {number} Number of segments
 	 */
 	Spinner.prototype.get_segments = function() {
 		return this.segments;
@@ -122,7 +125,8 @@ define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
 	 * Returns the current progress value.
 	 *
 	 * @method
-	 * @return {Number} Progress value
+	 *
+	 * @return {number} Progress value
 	 */
 	Spinner.prototype.get_value = function() {
 		return ((this.progress_bar == null) ? this.value : this.progress_bar.get_value());
@@ -132,7 +136,8 @@ define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
 	 * Sets the number of segments the spinner has.
 	 *
 	 * @method
-	 * @param {Number} segments Number of segments
+	 *
+	 * @param {number} segments Number of segments
 	 */
 	Spinner.prototype.set_segments = function(segments) {
 		this.segments = segments;
@@ -142,7 +147,8 @@ define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
 	 * Sets the current progress value.
 	 *
 	 * @method
-	 * @param {Number} value Progress value
+	 *
+	 * @param {number} value Progress value
 	 */
 	Spinner.prototype.set_value = function(value) {
 		if (this.progress_bar == null) {
@@ -182,11 +188,12 @@ define([ 'jquery', 'djs/ProgressBar.min' ], function($, ProgressBar) {
 	 * Repaints the spinner canvas.
 	 *
 	 * @method
-	 * @param {Function} next jQuery function to call that will dequeue the next
+	 *
+	 * @param {function} next jQuery function to call that will dequeue the next
 	 *                        item
 	 */
 	Spinner.prototype._paint = function(next) {
-		var _this = $(this).data('djs-spinner');
+		var _this = $(this).data('djt-spinner');
 
 		var circle_radius = Math.round(Math.min(_this.canvas_width, _this.canvas_height) / 2);
 

@@ -1,11 +1,11 @@
 //j// BOF
 
 /*
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -13,7 +13,7 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(jsDjsVersion)#
+#echo(jsDjtVersion)#
 #echo(__FILEPATH__)#
 */
 
@@ -25,7 +25,8 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	 * "ResponsiveTable" enables a HTML table to be responsive for layout changes.
 	 *
 	 * @class ResponsiveTable
-	 * @param {Object} args Arguments to initialize a given ResponsiveTable
+	 *
+	 * @param {object} args Arguments to initialize a given ResponsiveTable
 	 */
 	function ResponsiveTable(args) {
 		if (args === undefined || (!('id' in args))) {
@@ -35,18 +36,17 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 		this.$responsive_table = null;
 		this.responsive_table_class = null;
 
-		// TODO: Rename "display-table" to "displaytable" if that's available
-		if ('display-table' in Modernizr && Modernizr['display-table']) {
+		if (Modernizr.displaytable) {
 			this.$responsive_table = $("#" + args.id);
 
 			if ('ResponsiveTable_class' in args) {
 				this.responsive_table_class = args.ResponsiveTable_class;
-			} else if (this.$responsive_table.data('djs-ui-responsivetable-class') != undefined) {
-				this.responsive_table_class = this.$responsive_table.data('djs-ui-responsivetable-class');
-			} else if ('djs_config' in self && 'ResponsiveTable_class' in self.djs_config) {
-				this.responsive_table_class = self.djs_config.ResponsiveTable_class;
+			} else if (this.$responsive_table.data('djt-ui-responsivetable-class') != undefined) {
+				this.responsive_table_class = this.$responsive_table.data('djt-ui-responsivetable-class');
+			} else if ('djt_config' in self && 'ResponsiveTable_class' in self.djt_config) {
+				this.responsive_table_class = self.djt_config.ResponsiveTable_class;
 			} else {
-				this.responsive_table_class = 'djs-ui-ResponsiveTable-class';
+				this.responsive_table_class = 'djt-ui-ResponsiveTable-class';
 			}
 
 			this.$responsive_table.addClass(this.responsive_table_class);
@@ -75,7 +75,8 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 	 * Sets the CSS class to be added to the responsive table.
 	 *
 	 * @method
-	 * @param {String} classname CSS class name
+	 *
+	 * @param {string} classname CSS class name
 	 */
 	ResponsiveTable.prototype.set_responsive_table_class = function(classname) {
 		if (this.$responsive_table != null) {

@@ -1,11 +1,11 @@
 //j// BOF
 
 /*
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -13,7 +13,7 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(jsDjsVersion)#
+#echo(jsDjtVersion)#
 #echo(__FILEPATH__)#
 */
 
@@ -33,21 +33,21 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 			throw new Error('Missing required arguments');
 		}
 
-		if (!('_djs_XHtml5FormElement_enable_input' in self)) {
-			self._djs_XHtml5FormElement_enable_input = enable_input;
+		if (!('_djt_XHtml5FormElement_enable_input' in self)) {
+			self._djt_XHtml5FormElement_enable_input = enable_input;
 		}
 
-		if (!('_djs_XHtml5FormElement_unfocus' in self)) {
-			self._djs_XHtml5FormElement_unfocus = unfocus;
+		if (!('_djt_XHtml5FormElement_unfocus' in self)) {
+			self._djt_XHtml5FormElement_unfocus = unfocus;
 		}
 
 		this.id = args.id;
 		this.$node = $("#" + args.id);
 		this.type = args.type;
 
-		this.focused_class = (('djs_config' in self && 'XHtml5FormElement_focused_class' in self.djs_config) ? self.djs_config.XHtml5FormElement_focused_class : 'djs-ui-XHtml5FormElement-input-focus');
-		this.focused_duration = (('djs_config' in self && 'XHtml5FormElement_focused_duration' in self.djs_config) ? self.djs_config.XHtml5FormElement_focused_duration : 0);
-		this.temporarily_disabled_duration = (('djs_config' in self && 'XHtml5FormElement_temporarily_disabled_duration' in self.djs_config) ? self.djs_config.XHtml5FormElement_temporarily_disabled_duration : 3000);
+		this.focused_class = (('djt_config' in self && 'XHtml5FormElement_focused_class' in self.djt_config) ? self.djt_config.XHtml5FormElement_focused_class : 'djt-ui-XHtml5FormElement-input-focus');
+		this.focused_duration = (('djt_config' in self && 'XHtml5FormElement_focused_duration' in self.djt_config) ? self.djt_config.XHtml5FormElement_focused_duration : 0);
+		this.temporarily_disabled_duration = (('djt_config' in self && 'XHtml5FormElement_temporarily_disabled_duration' in self.djt_config) ? self.djt_config.XHtml5FormElement_temporarily_disabled_duration : 3000);
 
 		var _this = this;
 
@@ -67,7 +67,11 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 			}
 		}
 
-		if (this.$node.attr('placeholder') != undefined && (!Modernizr.input.placeholder)) {
+		if (this.$node.attr('placeholder') != undefined
+		    && (('placeholder' in Modernizr && (!Modernizr.placeholder))
+		        || ('input' in Modernizr && (!Modernizr.input.placeholder))
+		       )
+		   ) {
 			require([ 'jquery', 'jquery.placeholder' ], function($, $placeholder) {
 				_this.$node.placeholder();
 			});
@@ -89,7 +93,7 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 			_return = false;
 		} else {
 			this.$node.attr('disabled', 'disabled');
-			self.setTimeout('self._djs_XHtml5FormElement_enable_input("' + id + '")', duration);
+			self.setTimeout('self._djt_XHtml5FormElement_enable_input("' + id + '")', duration);
 		}
 
 		if (event == null) {
@@ -106,7 +110,7 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 
 		if (this.$node.addClass(this.focused_class) != null) {
 			if (duration > 0) {
-				self.setTimeout('self._djs_XHtml5FormElement_unfocus("' + this.id + '", "' + this.focused_class + '")', duration);
+				self.setTimeout('self._djt_XHtml5FormElement_unfocus("' + this.id + '", "' + this.focused_class + '")', duration);
 			} else {
 				var _this = this;
 

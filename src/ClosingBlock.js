@@ -1,11 +1,11 @@
 //j// BOF
 
 /*
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -13,22 +13,22 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(jsDjsVersion)#
+#echo(jsDjtVersion)#
 #echo(__FILEPATH__)#
 */
 
 /**
  * @module ClosingBlock
  */
-define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
+define([ 'jquery', 'djt/Spinner.min' ], function($, Spinner) {
 	/**
 	 * The "close()" helper function is called if the spinner is clicked or after a
 	 * timeout.
 	 *
-	 * @function
-	 * @name _djs_ClosingBlock_close
+	 * @function _djt_ClosingBlock_close
 	 * @global
-	 * @param {String} id Block ID to be closed
+	 *
+	 * @param {string} id Block ID to be closed
 	 */
 	function close(id) {
 		var $node = $("#" + id);
@@ -50,7 +50,8 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 	 * given timeout.
 	 *
 	 * @class ClosingBlock
-	 * @param {Object} args Arguments to initialize a given ClosingBlock
+	 *
+	 * @param {object} args Arguments to initialize a given ClosingBlock
 	 */
 	function ClosingBlock(args) {
 		if (args === undefined
@@ -62,8 +63,8 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 			throw new Error('Missing required arguments');
 		}
 
-		if (!('_djs_ClosingBlock_close' in self)) {
-			self._djs_ClosingBlock_close = close;
+		if (!('_djt_ClosingBlock_close' in self)) {
+			self._djt_ClosingBlock_close = close;
 		}
 
 		this.id = args.id;
@@ -85,29 +86,28 @@ define([ 'jquery', 'djs/Spinner.min' ], function($, Spinner) {
 		var spinner = new Spinner(spinner_args);
 
 		var $spinner = spinner.get_jQnode();
-		$spinner.wrap($('<a href="javascript:self._djs_ClosingBlock_close(\'' + args.id + '\')"></a>'));
+		$spinner.wrap($('<a href="javascript:self._djt_ClosingBlock_close(\'' + args.id + '\')"></a>'));
 
 		spinner.show();
 
-		$node.data('djs-closing-block', this);
-		$node.data('djs-closing-block-spinner', spinner);
+		$node.data('djt-closing-block', this);
+		$node.data('djt-closing-block-spinner', spinner);
 		$node.delay(this.timeout).queue(this._tick);
 	}
 
 	/**
 	 * The "_tick() " helper function is used to increase the spinner value.
 	 *
-	 * @function
-	 * @name _djs_ClosingBlock_tick
-	 * @global
-	 * @param {String} id Block ID to be closed
-	 * @param {Number} timeout Timeout value for each tick callback
+	 * @method
+	 *
+	 * @param {function} next jQuery function to call that will dequeue the next
+	 *                        item
 	 */
 	ClosingBlock.prototype._tick = function(next) {
 		var $node = $(this);
-		var _this = $node.data('djs-closing-block');
+		var _this = $node.data('djt-closing-block');
 
-		var ticked_spinner = $node.data('djs-closing-block-spinner');
+		var ticked_spinner = $node.data('djt-closing-block-spinner');
 
 		if (ticked_spinner != undefined) {
 			var spinner_value = ticked_spinner.get_value();

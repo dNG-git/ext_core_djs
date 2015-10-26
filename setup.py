@@ -2,11 +2,11 @@
 ##j## BOF
 
 """
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -38,9 +38,9 @@ from os import path
 
 with TemporaryDirectory(dir = ".") as build_directory:
 #
-	css_js_copyright = "djs #echo(jsDjsVersion)# - (C) direct Netware Group - All rights reserved"
+	css_js_copyright = "djt #echo(jsDjtVersion)# - (C) direct Netware Group - All rights reserved"
 
-	parameters = { "jsDjsVersion": get_version(),
+	parameters = { "jsDjtVersion": get_version(),
 	               "js_header": css_js_copyright, "js_min_filenames": True,
 	               "js_strip_source_directory": True
 	             }
@@ -49,14 +49,14 @@ with TemporaryDirectory(dir = ".") as build_directory:
 	InstallData.set_build_target_path(build_directory)
 	InstallData.set_build_target_parameters(parameters)
 
-	setup(name = "pas_http_js",
+	setup(name = "djt",
 	      version = get_version(),
 	      description = "All-in-one toolbox for HTML5 presentation and manipulation",
-	      long_description = """direct JavaScript contains a set of modules for HTML5 presentation and manipulation.""",
+	      long_description = """The "direct JavaScript Toolbox" contain a set of modules for HTML5 presentation and manipulation.""",
 	      author = "direct Netware Group",
 	      author_email = "web@direct-netware.de",
 	      license = "MPL2",
-	      url = "https://www.direct-netware.de/redirect?pas;http;js",
+	      url = "https://www.direct-netware.de/redirect?js;djt",
 
 	      data_files = [ ( "docs", [ "LICENSE", "README" ]) ],
 

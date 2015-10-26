@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -12,17 +12,17 @@ obtain one at http://mozilla.org/MPL/2.0/.
 
 https://www.direct-netware.de/redirect?licenses;mpl2
 // -->
-<project name="js_djs" default="compile.src">
-	<dirname property="djs.basedir" file="${ant.file}" />
-	<property file="${djs.basedir}/_extras/build.properties" />
+<project name="js_djt" default="compile.src">
+	<dirname property="djt.basedir" file="${ant.file}" />
+	<property file="${djt.basedir}/_extras/build.properties" />
 
 	<target name="compile.src" description="Compile module ${ant.project.name}">
 		<exec executable="python">
 			<arg file="${jsBuilder.filePathName}" />
 			<arg value="--filetype=${jsBuilder.fileTypes}" />
-			<arg value="--include=${djs.basedir}/src/" />
+			<arg value="--include=${djt.basedir}/src/" />
 			<arg value="--output_path=${jsBuilder.target}" />
-			<arg value="--strip_prefix=${djs.basedir}/src/" />
+			<arg value="--strip_prefix=${djt.basedir}/src/" />
 		</exec>
 	</target>
 </project>

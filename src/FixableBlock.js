@@ -1,11 +1,11 @@
 //j// BOF
 
 /*
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -13,19 +13,20 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(jsDjsVersion)#
+#echo(jsDjtVersion)#
 #echo(__FILEPATH__)#
 */
 
 /**
  * @module FixableBlock
  */
-define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
+define([ 'jquery', 'djt/NodePosition.min' ], function($, NodePosition) {
 	/**
 	 * "FixableBlock" is an automatically top-fixed block.
 	 *
 	 * @class FixableBlock
-	 * @param {Object} args Arguments to initialize a given FixableBlock
+	 *
+	 * @param {object} args Arguments to initialize a given FixableBlock
 	 */
 	function FixableBlock(args) {
 		if (args === undefined || (!('id' in args))) {
@@ -41,12 +42,12 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 
 		if ('FixableBlock_fixed_class' in args) {
 			this.fixable_block_fixed_class = args.FixableBlock_fixed_class;
-		} else if (this.$fixable_block.data('djs-ui-fixableblock-fixed-class') != undefined) {
-			this.fixable_block_fixed_class = this.$fixable_block.data('djs-ui-fixableblock-fixed-class');
-		} else if ('djs_config' in self && 'FixableBlock_fixed_class' in self.djs_config) {
-			this.fixable_block_fixed_class = self.djs_config.FixableBlock_fixed_class;
+		} else if (this.$fixable_block.data('djt-ui-fixableblock-fixed-class') != undefined) {
+			this.fixable_block_fixed_class = this.$fixable_block.data('djt-ui-fixableblock-fixed-class');
+		} else if ('djt_config' in self && 'FixableBlock_fixed_class' in self.djt_config) {
+			this.fixable_block_fixed_class = self.djt_config.FixableBlock_fixed_class;
 		} else {
-			this.fixable_block_fixed_class = 'djs-ui-FixableBlock-fixed';
+			this.fixable_block_fixed_class = 'djt-ui-FixableBlock-fixed';
 		}
 
 		this.fixable_block_node_position = new NodePosition({ jQmy: this.$fixable_block });
@@ -58,13 +59,13 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 		var _this = this;
 
 		$(self).on("resize." + this.event_id, function() {
-			if (_this.$fixable_block.attr('display') != 'none') {
+			if (_this.$fixable_block.css('display') != 'none') {
 				_this.recalculate_and_update();
 			}
 		});
 
 		$(self).on("scroll." + this.event_id, function() {
-			if (_this.$fixable_block.attr('display') != 'none') {
+			if (_this.$fixable_block.css('display') != 'none') {
 				_this.update_fixed_state();
 			}
 		});
@@ -125,7 +126,8 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 	 * Enables or disables the fixed state of the block.
 	 *
 	 * @method
-	 * @param {Boolean} enabled False to disable
+	 *
+	 * @param {boolean} enabled False to disable
 	 */
 	FixableBlock.prototype.set_fixable_block_enabled = function(enabled) {
 		if (enabled === undefined) {
@@ -143,7 +145,8 @@ define([ 'jquery', 'djs/NodePosition.min' ], function($, NodePosition) {
 	 * Sets the CSS class to be added to the block if the fixed state is active.
 	 *
 	 * @method
-	 * @param {String} classname CSS class name
+	 *
+	 * @param {string} classname CSS class name
 	 */
 	FixableBlock.prototype.set_fixable_block_fixed_class = function(classname) {
 		if (this.fixable_block_fixed) {

@@ -1,11 +1,11 @@
 //j// BOF
 
 /*
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -13,19 +13,20 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(jsDjsVersion)#
+#echo(jsDjtVersion)#
 #echo(__FILEPATH__)#
 */
 
 /**
  * @module OverlayButton
  */
-define([ 'jquery', 'djs/NodePosition.min', 'Hammer' ], function($, NodePosition, Hammer) {
+define([ 'jquery', 'djt/NodePosition.min', 'Hammer' ], function($, NodePosition, Hammer) {
 	/**
 	 * "OverlayButton" creates a button to show content in a popup overlay.
 	 *
 	 * @class OverlayButton
-	 * @param {Object} args Arguments to initialize a given NodePosition
+	 *
+	 * @param {object} args Arguments to initialize a given NodePosition
 	 */
 	function OverlayButton(args) {
 		if (args === undefined || (!('id' in args))) {
@@ -36,22 +37,22 @@ define([ 'jquery', 'djs/NodePosition.min', 'Hammer' ], function($, NodePosition,
 
 		if ('OverlayButton_class' in args) {
 			this.overlay_button_class = args.OverlayButton_class;
-		} else if (this.$overlay_widget.data('djs-ui-overlaybutton-class') != undefined) {
-			this.overlay_button_class = this.$overlay_widget.data('djs-ui-overlaybutton-class');
-		} else if ('djs_config' in self && 'OverlayButton_class' in self.djs_config) {
-			this.overlay_button_class = self.djs_config.OverlayButton_class;
+		} else if (this.$overlay_widget.data('djt-ui-overlaybutton-class') != undefined) {
+			this.overlay_button_class = this.$overlay_widget.data('djt-ui-overlaybutton-class');
+		} else if ('djt_config' in self && 'OverlayButton_class' in self.djt_config) {
+			this.overlay_button_class = self.djt_config.OverlayButton_class;
 		} else {
-			this.overlay_button_class = 'djs-ui-OverlayButton';
+			this.overlay_button_class = 'djt-ui-OverlayButton';
 		}
 
 		if ('OverlayButton_widget_class' in args) {
 			this.overlay_button_class = args.OverlayButton_widget_class;
-		} else if (this.$overlay_widget.data('djs-ui-overlaybutton-widget-class') != undefined) {
-			this.overlay_widget_class = this.$overlay_widget.data('djs-ui-overlaybutton-widget-class');
-		} else if ('djs_config' in self && 'OverlayButton_widget_class' in self.djs_config) {
-			this.overlay_widget_class = self.djs_config.OverlayButton_widget_class;
+		} else if (this.$overlay_widget.data('djt-ui-overlaybutton-widget-class') != undefined) {
+			this.overlay_widget_class = this.$overlay_widget.data('djt-ui-overlaybutton-widget-class');
+		} else if ('djt_config' in self && 'OverlayButton_widget_class' in self.djt_config) {
+			this.overlay_widget_class = self.djt_config.OverlayButton_widget_class;
 		} else {
-			this.overlay_widget_class = 'djs-ui-OverlayButton-widget';
+			this.overlay_widget_class = 'djt-ui-OverlayButton-widget';
 		}
 
 		var button_content = (('button_content' in args) ? args.button_content : '≡');
@@ -87,7 +88,8 @@ define([ 'jquery', 'djs/NodePosition.min', 'Hammer' ], function($, NodePosition,
 	 * Sets the CSS class to be added to the button.
 	 *
 	 * @method
-	 * @param {String} classname CSS class name
+	 *
+	 * @param {string} classname CSS class name
 	 */
 	OverlayButton.prototype.set_overlay_button_class = function(classname) {
 		this.$overlay_button.removeClass(this.overlay_button_class).addClass(classname);
@@ -98,7 +100,8 @@ define([ 'jquery', 'djs/NodePosition.min', 'Hammer' ], function($, NodePosition,
 	 * Sets the CSS class to be added to the overlay popup.
 	 *
 	 * @method
-	 * @param {String} classname CSS class name
+	 *
+	 * @param {string} classname CSS class name
 	 */
 	OverlayButton.prototype.set_overlay_widget_class = function(classname) {
 		this.$overlay_widget.removeClass(this.overlay_widget_class).addClass(classname);
