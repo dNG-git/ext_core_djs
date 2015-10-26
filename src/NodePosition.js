@@ -1,11 +1,11 @@
 //j// BOF
 
 /*
-direct JavaScript
+direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
 ----------------------------------------------------------------------------
 (C) direct Netware Group - All rights reserved
-https://www.direct-netware.de/redirect?js;djs
+https://www.direct-netware.de/redirect?js;djt
 
 This Source Code Form is subject to the terms of the Mozilla Public License,
 v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -13,7 +13,7 @@ obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
 https://www.direct-netware.de/redirect?licenses;mpl2
 ----------------------------------------------------------------------------
-#echo(jsDjsVersion)#
+#echo(jsDjtVersion)#
 #echo(__FILEPATH__)#
 */
 
@@ -26,9 +26,11 @@ define([ 'jquery' ], function($) {
 	 * hidden nodes.
 	 *
 	 * @function
-	 * @param {Object} $node jQuery node instance
-	 * @param {Boolean} additional_metrics True to calculate additional metrics
-	 * @return {Object} Node metrics
+	 *
+	 * @param {object} $node jQuery node instance
+	 * @param {boolean} additional_metrics True to calculate additional metrics
+	 *
+	 * @return {object} Node metrics
 	 */
 	function _get_hidden_node_metrics($node, additional_metrics) {
 		var display_value = $node.css('display');
@@ -77,9 +79,11 @@ define([ 'jquery' ], function($) {
 	 * nodes.
 	 *
 	 * @function
-	 * @param {Object} $node jQuery node instance
-	 * @param {Boolean} additional_metrics True to calculate additional metrics
-	 * @return {Object} Node metrics
+	 *
+	 * @param {object} $node jQuery node instance
+	 * @param {boolean} additional_metrics True to calculate additional metrics
+	 *
+	 * @return {object} Node metrics
 	 */
 	function _get_node_metrics($node, additional_metrics) {
 		if (additional_metrics == null) {
@@ -118,7 +122,8 @@ define([ 'jquery' ], function($) {
 	 * blocks.
 	 *
 	 * @class NodePosition
-	 * @param {Object} args Arguments to initialize a given NodePosition
+	 *
+	 * @param {object} args Arguments to initialize a given NodePosition
 	 */
 	function NodePosition(args) {
 		if (args === undefined) {
@@ -129,6 +134,7 @@ define([ 'jquery' ], function($) {
 		this.at_reference_configuration = { x: 'center', y: 'bottom' };
 		this.event_id = Math.random().toString();
 		this.$my = null;
+		this.my_dom_restructure = false;
 		this.my_reference_configuration = { x: 'center', y: 'top' };
 
 		if ('at_id' in args) {
@@ -173,15 +179,27 @@ define([ 'jquery' ], function($) {
 			this.$viewport = $(self.document);
 		}
 
+		if ('my_dom_restructure' in args) {
+			this.my_dom_restructure = args.my_dom_restructure;
+		}
+
 		this.reposition();
 
 		var _this = this;
 
 		$(self).on("resize." + this.event_id, function() {
-			if (_this.$my.attr('display') != 'none') {
+			if (_this.$my.css('display') != 'none') {
 				_this.reposition();
 			}
 		});
+
+		if ('my_reposition_on_scroll' in args && args.my_reposition_on_scroll) {
+			$(self).on("scroll." + this.event_id, function() {
+				if (_this.$my.css('display') != 'none') {
+					_this.reposition();
+				}
+			});
+		}
 	}
 
 	/**
@@ -194,14 +212,17 @@ define([ 'jquery' ], function($) {
 		this.$my = null;
 
 		$(self).off("resize." + this.event_id);
+		$(self).off("scroll." + this.event_id);
 	}
 
 	/**
 	 * "get_at_metrics()" returns the metrics for the "at" node.
 	 *
 	 * @method
-	 * @param {Boolean} additional_metrics True to calculate additional metrics
-	 * @return {Object} Node metrics
+	 *
+	 * @param {boolean} additional_metrics True to calculate additional metrics
+	 *
+	 * @return {object} Node metrics
 	 */
 	NodePosition.prototype.get_at_metrics = function(additional_metrics) {
 		if (additional_metrics === undefined) {
@@ -221,8 +242,10 @@ define([ 'jquery' ], function($) {
 	 * "get_my_metrics()" returns the metrics for the "my" node.
 	 *
 	 * @method
-	 * @param {Boolean} additional_metrics True to calculate additional metrics
-	 * @return {Object} Node metrics
+	 *
+	 * @param {boolean} additional_metrics True to calculate additional metrics
+	 *
+	 * @return {object} Node metrics
 	 */
 	NodePosition.prototype.get_my_metrics = function(additional_metrics) {
 		if (additional_metrics === undefined) {
@@ -236,9 +259,11 @@ define([ 'jquery' ], function($) {
 	 * Returns the offset information for the "at" node based on the "my" node.
 	 *
 	 * @method
-	 * @param {Object} my_metrics "my" metrics
-	 * @param {Object} at_metrics "at" metrics
-	 * @return {Object} Offset x and y coordinates
+	 *
+	 * @param {object} my_metrics "my" metrics
+	 * @param {object} at_metrics "at" metrics
+	 *
+	 * @return {object} Offset x and y coordinates
 	 */
 	NodePosition.prototype.get_reference_offset = function(my_metrics, at_metrics) {
 		var x, y;
@@ -318,11 +343,20 @@ define([ 'jquery' ], function($) {
 	 * Returns the offset information for the "at" node based on the "my" node.
 	 *
 	 * @method
-	 * @param {Object} my_metrics "my" metrics
-	 * @param {Object} at_metrics "at" metrics
+	 *
+	 * @param {object} my_metrics "my" metrics
+	 * @param {object} at_metrics "at" metrics
 	 */
 	NodePosition.prototype.reposition = function(classname) {
 		if (this.$at != null) {
+			if (this.my_dom_restructure && this.$my.data('djt-NodePosition-dom-restructured') != '1') {
+				this.$my.detach();
+				$('body').append(this.$my);
+
+				this.$my.data('djt-NodePosition-dom-restructured', '1');
+				this.my_dom_restructure = false;
+			}
+
 			var my_metrics = _get_node_metrics(this.$my);
 			var at_metrics = _get_node_metrics(this.$at, true);
 
