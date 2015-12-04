@@ -20,7 +20,7 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 /**
  * @module OverlayButton
  */
-define([ 'jquery', 'djt/NodePosition.min', 'Hammer' ], function($, NodePosition, Hammer) {
+define([ 'jquery', 'Hammer', 'djt/NodePosition.min' ], function($, Hammer, NodePosition) {
 	/**
 	 * "OverlayButton" creates a button to show content in a popup overlay.
 	 *
@@ -42,7 +42,7 @@ define([ 'jquery', 'djt/NodePosition.min', 'Hammer' ], function($, NodePosition,
 		} else if ('djt_config' in self && 'OverlayButton_class' in self.djt_config) {
 			this.overlay_button_class = self.djt_config.OverlayButton_class;
 		} else {
-			this.overlay_button_class = 'djt-ui-OverlayButton';
+			this.overlay_button_class = 'djt-ui-overlaybutton';
 		}
 
 		if ('OverlayButton_widget_class' in args) {
@@ -52,7 +52,7 @@ define([ 'jquery', 'djt/NodePosition.min', 'Hammer' ], function($, NodePosition,
 		} else if ('djt_config' in self && 'OverlayButton_widget_class' in self.djt_config) {
 			this.overlay_widget_class = self.djt_config.OverlayButton_widget_class;
 		} else {
-			this.overlay_widget_class = 'djt-ui-OverlayButton-widget';
+			this.overlay_widget_class = 'djt-ui-overlaybutton-widget';
 		}
 
 		var button_content = (('button_content' in args) ? args.button_content : '≡');
@@ -75,10 +75,9 @@ define([ 'jquery', 'djt/NodePosition.min', 'Hammer' ], function($, NodePosition,
 		this.$overlay_widget.hide();
 
 		var node_position = new NodePosition({ jQmy: this.$overlay_widget, my_reference: 'top center', jQat: this.$overlay_button, at_reference: 'bottom center' });
-		var overlay_button_listener = new Hammer(this.$overlay_button.get(0));
 		var _this = this;
 
-		overlay_button_listener.on('tap', function() {
+		Hammer(this.$overlay_button.get(0)).on('tap', function() {
 			node_position.reposition();
 			_this.$overlay_widget.toggle();
 		});
