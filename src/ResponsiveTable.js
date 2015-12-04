@@ -46,7 +46,7 @@ define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
 			} else if ('djt_config' in self && 'ResponsiveTable_class' in self.djt_config) {
 				this.responsive_table_class = self.djt_config.ResponsiveTable_class;
 			} else {
-				this.responsive_table_class = 'djt-ui-ResponsiveTable-class';
+				this.responsive_table_class = 'djt-ui-responsivetable-class';
 			}
 
 			this.$responsive_table.addClass(this.responsive_table_class);

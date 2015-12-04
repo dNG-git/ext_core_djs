@@ -349,11 +349,11 @@ define([ 'jquery' ], function($) {
 	 */
 	NodePosition.prototype.reposition = function(classname) {
 		if (this.$at != null) {
-			if (this.my_dom_restructure && this.$my.data('djt-NodePosition-dom-restructured') != '1') {
+			if (this.my_dom_restructure && this.$my.data('djt-nodeposition-dom-restructured') != '1') {
 				this.$my.detach();
 				$('body').append(this.$my);
 
-				this.$my.data('djt-NodePosition-dom-restructured', '1');
+				this.$my.data('djt-nodeposition-dom-restructured', '1');
 				this.my_dom_restructure = false;
 			}
 

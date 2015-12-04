@@ -80,7 +80,7 @@ define([ 'jquery', 'djt/ProgressBar.min' ], function($, ProgressBar) {
 		} else if ('djt_config' in self && 'Spinner_class' in self.djt_config) {
 			this.$canvas.addClass(self.djt_config.Spinner_class);
 		} else {
-			this.$canvas.addClass('djt-ui-Spinner');
+			this.$canvas.addClass('djt-ui-spinner');
 		}
 
 		if ('Spinner_style' in args) {
@@ -95,7 +95,7 @@ define([ 'jquery', 'djt/ProgressBar.min' ], function($, ProgressBar) {
 		if (this.progress_bar == null) {
 			this.$canvas.data('djt-spinner', this);
 		} else {
-			this.$canvas.addClass('djt-ui-Spinner-fallback');
+			this.$canvas.addClass('djt-ui-spinner-fallback');
 		}
 	}
 

@@ -90,8 +90,8 @@ define([ 'jquery', 'djt/Spinner.min' ], function($, Spinner) {
 
 		spinner.show();
 
-		$node.data('djt-closing-block', this);
-		$node.data('djt-closing-block-spinner', spinner);
+		$node.data('djt-closingblock', this);
+		$node.data('djt-closingblock-spinner', spinner);
 		$node.delay(this.timeout).queue(this._tick);
 	}
 
@@ -105,9 +105,9 @@ define([ 'jquery', 'djt/Spinner.min' ], function($, Spinner) {
 	 */
 	ClosingBlock.prototype._tick = function(next) {
 		var $node = $(this);
-		var _this = $node.data('djt-closing-block');
+		var _this = $node.data('djt-closingblock');
 
-		var ticked_spinner = $node.data('djt-closing-block-spinner');
+		var ticked_spinner = $node.data('djt-closingblock-spinner');
 
 		if (ticked_spinner != undefined) {
 			var spinner_value = ticked_spinner.get_value();

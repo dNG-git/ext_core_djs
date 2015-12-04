@@ -79,12 +79,12 @@ define([ 'jquery' ], function($) {
 
 		if ('ProgressBar_class' in args) {
 			this.$progress_bar.addClass(args.ProgressBar_class);
-		} else if ($progress_bar_parent.data('djt-ui-progress-bar-class') != undefined) {
-			this.$progress_bar.addClass($progress_bar_parent.data('djt-ui-progress-bar-class'));
+		} else if ($progress_bar_parent.data('djt-ui-progressbar-class') != undefined) {
+			this.$progress_bar.addClass($progress_bar_parent.data('djt-ui-progressbar-class'));
 		} else if ('djt_config' in self && 'ProgressBar_class' in self.djt_config) {
 			this.$progress_bar.addClass(self.djt_config.ProgressBar_class);
 		} else {
-			this.$progress_bar.addClass('djt-ui-ProgressBar');
+			this.$progress_bar.addClass('djt-ui-progressbar');
 		}
 
 		if ('ProgressBar_style' in args) {
@@ -96,24 +96,24 @@ define([ 'jquery' ], function($) {
 		if ('position' in progress_bar) {
 			this.indeterminate = (progress_bar.position < 0);
 			this.max = progress_bar.max;
-			this.$progress_bar.data('djt-progress-bar', this);
+			this.$progress_bar.data('djt-progressbar', this);
 		} else {
-			this.$progress_bar.addClass('djt-ui-ProgressBar-fallback');
+			this.$progress_bar.addClass('djt-ui-progressbar-fallback');
 
 			this.$progress_bar_fallback = $('<div id="' + args.id + '_djt_progress_bar_fallback" style="position:relative;width:0px;height:inherit"></div>');
 			this.$progress_bar.append(this.$progress_bar_fallback);
 
 			if ('ProgressBar_fallback_class' in args) {
 				this.$progress_bar_fallback.addClass(args.ProgressBar_fallback_class);
-			} else if ($progress_bar_parent.data('djt-ui-progress-bar-fallback-class') != undefined) {
-				this.$progress_bar_fallback.addClass($progress_bar_parent.data('djt-ui-progress-bar-fallback-class'));
+			} else if ($progress_bar_parent.data('djt-ui-progressbar-fallback-class') != undefined) {
+				this.$progress_bar_fallback.addClass($progress_bar_parent.data('djt-ui-progressbar-fallback-class'));
 			} else if ('djt_config' in self && 'ProgressBar_fallback_class' in self.djt_config) {
 				this.$progress_bar_fallback.addClass(self.djt_config.ProgressBar_fallback_class);
 			} else {
 				this.$progress_bar_fallback.css('background-color', this.$progress_bar.css('color'));
 			}
 
-			this.$progress_bar_fallback.data('djt-progress-bar', this);
+			this.$progress_bar_fallback.data('djt-progressbar', this);
 		}
 
 		if ('value' in args) {
@@ -198,7 +198,7 @@ define([ 'jquery' ], function($) {
 	 *                        item
 	 */
 	ProgressBar.prototype._paint = function(next) {
-		var _this = $(this).data('djt-progress-bar');
+		var _this = $(this).data('djt-progressbar');
 
 		if (_this.$progress_bar_fallback != null) {
 			var progress_bar_width = _this.progress_bar_width;
