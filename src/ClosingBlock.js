@@ -33,16 +33,16 @@ define([ 'jquery', 'djt/Spinner.min' ], function($, Spinner) {
 	function close(id) {
 		var $node = $("#" + id);
 
-		if ($node.length > 0) {
-			var $node_parent = $node.parent();
+		$node.slideUp(100, function() {
+			var $node = $(this)
 
-			while ($node_parent != undefined && $node_parent != null && $node_parent.children().length < 2) {
-				$node = $node_parent;
-				$node_parent = $node.parent();
-			}
+			var $parent_node = $node.parent();
 
-			$node.slideUp(100, function() { $(this).remove(); });
-		}
+			$node.trigger('xdomremove');
+			$node.remove();
+
+			$parent_node.trigger('xdomchanged');
+		});
 	}
 
 	/**
@@ -55,7 +55,6 @@ define([ 'jquery', 'djt/Spinner.min' ], function($, Spinner) {
 	 */
 	function ClosingBlock(args) {
 		if (args === undefined
-		    || (!('id' in args))
 		    || (!('width' in args))
 		    || (!('height' in args))
 		    || (!('timeout' in args))
@@ -67,10 +66,29 @@ define([ 'jquery', 'djt/Spinner.min' ], function($, Spinner) {
 			self._djt_ClosingBlock_close = close;
 		}
 
-		this.id = args.id;
+		var $node = null;
+
+		if ('id' in args) {
+			$node = $("#" + args.id);
+		} else if ('jQnode' in args) {
+			$node = args.jQnode;
+		}
+
+		if ($node == null) {
+			throw new Error('Missing required arguments');
+		}
+
+		var node_id = $node.attr('id');
+
+		if (node_id === undefined) {
+			node_id = ("djt_closingblock_id_" + Math.random().toString().replace(/\W/,'_'));
+			$node.attr('id', node_id);
+		}
+
+		this.id = node_id;
 		this.timeout = args.timeout * 10;
 
-		var spinner_args = { parent_id: args.id,
+		var spinner_args = { parent_id: node_id,
 		                     width: args.width,
 		                     height: args.height,
 		                     value: 0
@@ -82,11 +100,10 @@ define([ 'jquery', 'djt/Spinner.min' ], function($, Spinner) {
 			}
 		});
 
-		var $node = $("#" + args.id);
 		var spinner = new Spinner(spinner_args);
 
 		var $spinner = spinner.get_jQnode();
-		$spinner.wrap($('<a href="javascript:self._djt_ClosingBlock_close(\'' + args.id + '\')"></a>'));
+		$spinner.wrap($('<a href="javascript:self._djt_ClosingBlock_close(\'' + node_id + '\')"></a>'));
 
 		spinner.show();
 
