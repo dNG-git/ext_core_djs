@@ -29,7 +29,7 @@ define([ 'jquery', 'djt/NodePosition.min' ], function($, NodePosition) {
 	 * @param {object} args Arguments to initialize a given FixableBlock
 	 */
 	function FixableBlock(args) {
-		if (args === undefined || (!('id' in args))) {
+		if (args === undefined) {
 			throw new Error('Missing required argument');
 		}
 
@@ -38,7 +38,17 @@ define([ 'jquery', 'djt/NodePosition.min' ], function($, NodePosition) {
 		this.fixable_block_fixed = false;
 		this.fixable_block_metrics = null;
 
-		this.$fixable_block = $("#" + args.id);
+		this.$fixable_block = null;
+
+		if ('id' in args) {
+			this.$fixable_block = $("#" + args.id);
+		} else if ('jQnode' in args) {
+			this.$fixable_block = args.jQnode;
+		}
+
+		if (this.$fixable_block == null) {
+			throw new Error('Missing required argument');
+		}
 
 		if ('FixableBlock_fixed_class' in args) {
 			this.fixable_block_fixed_class = args.FixableBlock_fixed_class;
@@ -58,7 +68,7 @@ define([ 'jquery', 'djt/NodePosition.min' ], function($, NodePosition) {
 
 		var _this = this;
 
-		$(self).on("resize." + this.event_id, function() {
+		$(self).on("resize." + this.event_id + " xdomchanged." + this.event_id, function() {
 			if (_this.$fixable_block.css('display') != 'none') {
 				_this.recalculate_and_update();
 			}
@@ -77,8 +87,7 @@ define([ 'jquery', 'djt/NodePosition.min' ], function($, NodePosition) {
 	 * @method
 	 */
 	NodePosition.prototype.destroy = function() {
-		$(self).off("resize." + this.event_id);
-		$(self).off("scroll." + this.event_id);
+		$(self).off("." + this.event_id);
 	}
 
 	/**
