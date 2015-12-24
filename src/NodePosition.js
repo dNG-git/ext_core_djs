@@ -45,7 +45,7 @@ define([ 'jquery' ], function($) {
 			top: -10000 + 'px'
 		});
 
-		var _return = _get_node_metrics($node, additional_metrics);
+		var _return = _get_node_metrics($node, additional_metrics, false);
 
 		if (additional_metrics) {
 			_return.top = ((top_value == undefined) ? undefined : parseInt(top_value));
@@ -82,17 +82,23 @@ define([ 'jquery' ], function($) {
 	 *
 	 * @param {object} $node jQuery node instance
 	 * @param {boolean} additional_metrics True to calculate additional metrics
+	 * @param {boolean} filter_hidden True to temporarily change node CSS to
+	 *                                calculate metrics
 	 *
 	 * @return {object} Node metrics
 	 */
-	function _get_node_metrics($node, additional_metrics) {
+	function _get_node_metrics($node, additional_metrics, filter_hidden) {
 		if (additional_metrics == null) {
 			additional_metrics = false;
 		}
 
+		if (filter_hidden == null) {
+			filter_hidden = true;
+		}
+
 		var _return = { width: 0, height: 0 };
 
-		var $hidden_node = $node.filter(':hidden');
+		var $hidden_node = (filter_hidden ? $node.filter(':hidden') : [ ]);
 
 		if ($hidden_node.length > 0) {
 			_return = _get_hidden_node_metrics($node);
@@ -132,7 +138,7 @@ define([ 'jquery' ], function($) {
 
 		this.$at = null;
 		this.at_reference_configuration = { x: 'center', y: 'bottom' };
-		this.event_id = Math.random().toString();
+		this.event_id = Math.random().toString().replace(/\W/,'_');
 		this.$my = null;
 		this.my_dom_restructure = false;
 		this.my_reference_configuration = { x: 'center', y: 'top' };
@@ -183,22 +189,24 @@ define([ 'jquery' ], function($) {
 			this.my_dom_restructure = args.my_dom_restructure;
 		}
 
-		this.reposition();
+		if (this.$at != null) {
+			this.reposition();
 
-		var _this = this;
+			var _this = this;
 
-		$(self).on("resize." + this.event_id, function() {
-			if (_this.$my.css('display') != 'none') {
-				_this.reposition();
-			}
-		});
-
-		if ('my_reposition_on_scroll' in args && args.my_reposition_on_scroll) {
-			$(self).on("scroll." + this.event_id, function() {
+			$(self).on("resize." + this.event_id + " xdomchanged." + this.event_id, function() {
 				if (_this.$my.css('display') != 'none') {
 					_this.reposition();
 				}
 			});
+
+			if ('my_reposition_on_scroll' in args && args.my_reposition_on_scroll) {
+				$(self).on("scroll." + this.event_id, function() {
+					if (_this.$my.css('display') != 'none') {
+						_this.reposition();
+					}
+				});
+			}
 		}
 	}
 
@@ -208,11 +216,7 @@ define([ 'jquery' ], function($) {
 	 * @method
 	 */
 	NodePosition.prototype.destroy = function() {
-		this.$at = null;
-		this.$my = null;
-
-		$(self).off("resize." + this.event_id);
-		$(self).off("scroll." + this.event_id);
+		$(self).off("." + this.event_id);
 	}
 
 	/**
