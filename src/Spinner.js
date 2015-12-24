@@ -31,7 +31,7 @@ define([ 'jquery', 'djt/ProgressBar.min' ], function($, ProgressBar) {
 	 * @param {object} args Arguments to initialize a given Spinner
 	 */
 	function Spinner(args) {
-		if (args === undefined || ((!('id' in args)) && (!('parent_id' in args)))) {
+		if (args === undefined) {
 			throw new Error('Missing required arguments');
 		}
 
@@ -46,6 +46,16 @@ define([ 'jquery', 'djt/ProgressBar.min' ], function($, ProgressBar) {
 		this.visible = false;
 
 		var $canvas_parent = null;
+
+		if ('parent_id' in args) {
+			$canvas_parent = $("#" + args.parent_id)
+		} else if ('jQparent' in args) {
+			$canvas_parent = args.jQparent;
+		}
+
+		if ((!('id' in args)) && $canvas_parent == null) {
+			throw new Error('Missing required arguments');
+		}
 
 		if ('id' in args) {
 			this.$canvas = $("#" + args.id);
@@ -63,9 +73,9 @@ define([ 'jquery', 'djt/ProgressBar.min' ], function($, ProgressBar) {
 		} else if ((!('width' in args)) || (!('height' in args))) {
 			throw new Error('Missing required arguments');
 		} else {
-			$canvas_parent = $("#" + args.parent_id);
+			var canvas_id = ("djt_spinner_id_" + Math.random().toString().replace(/\W/,'_'));
 
-			this.$canvas = $('<canvas id="' + args.parent_id + '_djt_spinner_canvas" width="' + args.width + '" height="' + args.height + '" style="visibility:hidden"></canvas>');
+			this.$canvas = $("<canvas id='" + canvas_id + "' width='" + args.width + "' height='" + args.height + "' style='visibility:hidden'></canvas>");
 			$canvas_parent.append(this.$canvas);
 		}
 
@@ -75,7 +85,7 @@ define([ 'jquery', 'djt/ProgressBar.min' ], function($, ProgressBar) {
 
 		if ('Spinner_class' in args) {
 			this.$canvas.addClass(args.Spinner_class);
-		} else if ($canvas_parent.data('djt-ui-spinner-class') != undefined) {
+		} else if ($canvas_parent.data('djt-ui-spinner-class') !== undefined) {
 			this.$canvas.addClass($canvas_parent.data('djt-ui-spinner-class'));
 		} else if ('djt_config' in self && 'Spinner_class' in self.djt_config) {
 			this.$canvas.addClass(self.djt_config.Spinner_class);
