@@ -17,18 +17,56 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 #echo(__FILEPATH__)#
 */
 
+/**
+ * @module XHtml5FormElement
+ */
 define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
+	/**
+	 * While copying an input element the following list of attributes are copied
+	 * as well.
+	 *
+	 * @constant
+	 */
 	var NEW_INPUT_ATTRIBUTES_COPIED = [ 'id', 'name', 'type', 'size', 'class', 'style', 'multiple', 'tabindex' ];
+	/**
+	 * "tabindex" applied to the next form field.
+	 *
+	 * @static
+	 */
 	var tabindex_count = 1;
 
+	/**
+	 * "XHtml5FormElement" provides some fallback and dynamic features to
+	 * (X)HTML5 form fields.
+	 *
+	 * @class XHtml5FormElement
+	 *
+	 * @param {object} args Arguments to initialize a given XHtml5FormElement
+	 */
 	function XHtml5FormElement(args) {
-		if (args === undefined || (!('id' in args)) || (!('type' in args))) {
+		if (args === undefined || (!('type' in args))) {
 			throw new Error('Missing required arguments');
 		}
 
-		this.id = args.id;
-		this.$node = $("#" + args.id);
+		this.$node = null;
 		this.type = args.type;
+
+		if ('id' in args) {
+			this.$node = $("#" + args.id);
+		} else if ('jQnode' in args) {
+			this.$node = args.jQnode;
+		}
+
+		if (this.$node == null) {
+			throw new Error('Missing required arguments');
+		}
+
+		this.id = this.$node.attr('id');
+
+		if (this.id === undefined) {
+			this.id = ("djt_xhtml5formelement_id_" + Math.random().toString().replace(/\W/,'_'));
+			this.$node.attr('id', this.id);
+		}
 
 		this.focused_class = (('djt_config' in self && 'XHtml5FormElement_focused_class' in self.djt_config) ? self.djt_config.XHtml5FormElement_focused_class : 'djt-ui-xhtml5formelement-input-focus');
 		this.focused_duration = (('djt_config' in self && 'XHtml5FormElement_focused_duration' in self.djt_config) ? self.djt_config.XHtml5FormElement_focused_duration : 0);
@@ -38,12 +76,16 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 
 		var _this = this;
 
-		if ($.inArray(this.type, [ 'datepicker', 'form', 'form_section', 'range', 'timepicker' ]) < 0) {
+		if ($.inArray(this.type, [ 'form', 'form_section' ]) < 0
+		    && ((!('init_default_behaviour' in args)) || args.init_default_behaviour)
+		   ) {
 			this.$node.on('focus', function() {
-				_this.focus();
+				_this.on_focus();
 			});
 
+			//if ($.inArray(this.type, [ 'date', 'datetime-local', 'month', 'range', 'time', 'week' ]) < 0) {
 			this.propagate_tabindex();
+			//}
 		}
 
 		if (this.type == 'button') {
@@ -69,6 +111,14 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 		}
 	}
 
+	/**
+	 * Disable input for a given amount of time.
+	 *
+	 * @method
+	 *
+	 * @param {object} event Event triggering the disabled state
+	 * @param {number} duration Duration of the disabled state
+	 */
 	XHtml5FormElement.prototype.disable_input_temporarily = function(event, duration) {
 		var _return = true;
 
@@ -97,26 +147,15 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 		}
 	}
 
-	XHtml5FormElement.prototype.focus = function(duration) {
-		if (duration === undefined) {
-			duration = this.focused_duration;
-		}
-
-		if (this.$node.addClass(this.focused_class) != null) {
-			var _this = this;
-
-			var unfocus_callback = function() {
-				$("#" + _this.id).removeClass(_this.focused_class);
-			};
-
-			if (duration > 0) {
-				self.setTimeout(unfocus_callback, duration);
-			} else {
-				this.$node.one('focusout', unfocus_callback);
-			}
-		}
-	}
-
+	/**
+	 * Returns a clean copy of the input field.
+	 *
+	 * @method
+	 *
+	 * @param {object} $node jQuery node to be copied
+	 *
+	 * @return {object} Copied jQuery node
+	 */
 	XHtml5FormElement.prototype._get_cleared_new_input = function($node) {
 		var new_input = '<input ';
 
@@ -139,16 +178,30 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 		return _return;
 	}
 
-	XHtml5FormElement.prototype._get_file_input_details = function(input_file_data) {
-		var _return = input_file_data.name;
+	/**
+	 * Returns (X)HTML code with details about a given file.
+	 *
+	 * @method
+	 *
+	 * @param {object} file_data File data
+	 *
+	 * @return {string} (X)HTML code with file details
+	 */
+	XHtml5FormElement.prototype._get_file_input_details = function(file_data) {
+		var _return = file_data.name;
 
-		if ('size' in input_file_data) {
-			_return += " <span class=\"" + this.selected_file_details_class + "\">(" + input_file_data.size + " B)</span>";
+		if ('size' in file_data) {
+			_return += " <span class=\"" + this.selected_file_details_class + "\">(" + file_data.size + " B)</span>";
 		}
 
 		return _return;
 	}
 
+	/**
+	 * Initializes file input fields.
+	 *
+	 * @method
+	 */
 	XHtml5FormElement.prototype._init_file_input = function() {
 		var _this = this;
 
@@ -157,6 +210,14 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 		});
 	}
 
+	/**
+	 * Event listener for deselecting a file upload.
+	 *
+	 * @method
+	 *
+	 * @param {object} event Event triggering deselection
+	 * @param {object} $selected_file_wrapper File upload wrapper to be removed
+	 */
 	XHtml5FormElement.prototype.on_file_input_deselected = function(event, $selected_file_wrapper) {
 		if (this.$node.attr('multiple') === undefined) {
 			var $old_node = this.$node;
@@ -173,6 +234,13 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 		}
 	}
 
+	/**
+	 * Event listener for selecting a file upload.
+	 *
+	 * @method
+	 *
+	 * @param {object} event Event triggering selection
+	 */
 	XHtml5FormElement.prototype.on_file_input_selected = function(event) {
 		if ('files' in event.target && event.target.files.length > 0) {
 			var selected_file_wrapper = "<div class=\"" + this.selected_file_class + "\"></div>";
@@ -215,6 +283,38 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 		}
 	}
 
+	/**
+	 * Event listener for focusing an input field.
+	 *
+	 * @method
+	 *
+	 * @param {number} duration Duration to temporarily apply the focused CSS class
+	 */
+	XHtml5FormElement.prototype.on_focus = function(duration) {
+		if (duration === undefined) {
+			duration = this.focused_duration;
+		}
+
+		if (this.$node.addClass(this.focused_class) != null) {
+			var _this = this;
+
+			var unfocus_callback = function() {
+				$("#" + _this.id).removeClass(_this.focused_class);
+			};
+
+			if (duration > 0) {
+				self.setTimeout(unfocus_callback, duration);
+			} else {
+				this.$node.one('focusout', unfocus_callback);
+			}
+		}
+	}
+
+	/**
+	 * Applies the next "tabindex" number to the input field.
+	 *
+	 * @method
+	 */
 	XHtml5FormElement.prototype.propagate_tabindex = function() {
 		if (this.$node.attr('tabindex') === undefined) {
 			this.$node.attr('tabindex', tabindex_count);
@@ -222,14 +322,36 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 		}
 	}
 
-	XHtml5FormElement.prototype.set_focused_class = function(classname) {
-		this.focused_class = classname;
+	/**
+	 * Sets the focused CSS class used.
+	 *
+	 * @method
+	 *
+	 * @param {string} class_name CSS class name
+	 */
+	XHtml5FormElement.prototype.set_focused_class = function(class_name) {
+		this.focused_class = class_name;
 	}
 
+	/**
+	 * Sets the duration the focused CSS class is applied temporarily.
+	 *
+	 * @method
+	 *
+	 * @param {duration} duration Duration to temporarily apply the focused CSS
+	 *        class
+	 */
 	XHtml5FormElement.prototype.set_focused_duration = function(duration) {
 		this.focused_duration = duration;
 	}
 
+	/**
+	 * Sets the duration the input field will be disabled temporarily.
+	 *
+	 * @method
+	 *
+	 * @param {duration} duration Duration to temporarily disable the input field
+	 */
 	XHtml5FormElement.prototype.set_temporarily_disabled_duration = function(duration) {
 		this.temporarily_disabled_duration = duration;
 	}
