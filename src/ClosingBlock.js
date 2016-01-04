@@ -38,7 +38,7 @@ define([ 'jquery', 'djt/Spinner.min' ], function($, Spinner) {
 
 			var $parent_node = $node.parent();
 
-			$node.trigger('xdomremove');
+			$node.triggerHandler('xdomremove');
 			$node.remove();
 
 			$parent_node.trigger('xdomchanged');
