@@ -105,6 +105,75 @@ define([ 'jquery' ], function($) {
 	}
 
 	/**
+	 * Parses the given query string and returns a key-value object.
+	 *
+	 * @method
+	 *
+	 * @param {string} query_string Query string to parse
+	 * @param {string} argument_separator Argument separator (default is ';')
+	 * @param {string} value_separator Key-value separator (default is '=')
+	 *
+	 * @return {object} Key-value query object
+	 */
+	HttpRequest.prototype.parse_query_string = function(query_string, argument_separator, value_separator) {
+		if (argument_separator === undefined) {
+			argument_separator = ';';
+		}
+
+		if (value_separator === undefined) {
+			value_separator = '=';
+		}
+
+		var _return = { };
+
+		var element_data = null;
+		var element_key = null;
+		var element_value = null;
+		var field_arrays = { };
+		var query_data = query_string.split(argument_separator);
+		var re_array = /^(.+)\\[(\\S*)\\]$/;
+		var re_result = null;
+
+		$.each(query_data, function(i, element_string) {
+			element_data = element_string.split(value_separator);
+
+			element_key = element_data.shift();
+			element_value = ((element_data.length > 1) ? element_data.join(value_separator) : element_data[0]);
+
+			re_result = re_array.exec(element_key);
+
+			if (re_result == null) {
+				_return[element_key] = element_value;
+			} else if (re_result[1] in field_arrays) {
+				field_arrays[re_result[1]].append({ "key": re_result[2], "value": element_value });
+			} else {
+				field_arrays[re_result[1]] = [ { "key": re_result[2], "value": element_value } ];
+			}
+		});
+
+		$.each(field_arrays, function(field_key, field_array) {
+			var element_position = 0;
+
+			if (field_key in _return) {
+				field_array[field_key].unshift(_return[field_key]);
+			}
+
+			_return[field_key] = { };
+
+			$.each(field_array, function(i, element) {
+				if (element.key.length > 0) {
+					_return[field_key][element.key] = element.value;
+				} else {
+					_return[field_key][element_position] = element.value;
+					element_position += 1;
+				}
+			});
+		});
+
+		return _return;
+	}
+
+	/**
 	 * Prepares the query string.
 	 *
 	 * @method
