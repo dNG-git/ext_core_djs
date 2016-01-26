@@ -182,7 +182,7 @@ define([ 'jquery' ], function($) {
 		} else if ('viewport' in args) {
 			this.$viewport = $(args.viewport);
 		} else {
-			this.$viewport = $(self.document);
+			this.$viewport = $('body');
 		}
 
 		if ('my_dom_restructure' in args) {
@@ -297,13 +297,13 @@ define([ 'jquery' ], function($) {
 		var viewport_width = this.$viewport.outerWidth(true);
 
 		if (this.my_reference_configuration.x == 'center') {
-			if ((my_metrics.width / 2) + x > viewport_width) {
-				x = viewport_width - (my_metrics.width / 2);
+			if ((x + my_metrics.width) > viewport_width) {
+				x = (viewport_width / 2);
 			}
 
-			x -= my_metrics.width / 2;
+			x -= (my_metrics.width / 2);
 		} else if (this.my_reference_configuration.x == 'right') {
-			if (x > viewport_width) {
+			if ((x + my_metrics.width) > viewport_width) {
 				x = viewport_width;
 			}
 
@@ -323,13 +323,13 @@ define([ 'jquery' ], function($) {
 		var viewport_height = this.$viewport.outerHeight(true);
 
 		if (this.my_reference_configuration.y == 'middle') {
-			if ((my_metrics.height / 2) + y > viewport_height) {
+			if ((y + my_metrics.height) > viewport_height) {
 				y = viewport_height - (my_metrics.height * 1.5);
 			}
 
 			y -= my_metrics.height / 2;
 		} else if (this.my_reference_configuration.y == 'bottom') {
-			if (y > viewport_height) {
+			if ((y + my_metrics.height) > viewport_height) {
 				y = viewport_height;
 			}
 
