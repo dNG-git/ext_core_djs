@@ -136,7 +136,7 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 			this.$node.attr('disabled', 'disabled');
 
 			self.setTimeout(function() {
-				$("#" + id).removeAttr('disabled');
+				$("#" + this.id).removeAttr('disabled');
 			}, duration);
 		}
 
