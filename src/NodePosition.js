@@ -280,14 +280,6 @@ define([ 'jquery' ], function($) {
 			x = 0;
 		}
 
-		if (this.at_reference_configuration.y == 'middle') {
-			y = at_metrics.height / 2;
-		} else if (this.at_reference_configuration.y == 'bottom') {
-			y = at_metrics.height;
-		} else {
-			y = 0;
-		}
-
 		x += at_metrics.left;
 
 		if (this.my_reference_configuration.y == 'left') {
@@ -297,8 +289,8 @@ define([ 'jquery' ], function($) {
 		var viewport_width = this.$viewport.outerWidth(true);
 
 		if (this.my_reference_configuration.x == 'center') {
-			if ((x + my_metrics.width) > viewport_width) {
-				x = (viewport_width / 2);
+			if ((x + (my_metrics.width / 2)) > viewport_width) {
+				x = viewport_width - (my_metrics.width / 2);
 			}
 
 			x -= (my_metrics.width / 2);
@@ -314,6 +306,14 @@ define([ 'jquery' ], function($) {
 
 		x = ((x < 0) ? 0 : x);
 
+		if (this.at_reference_configuration.y == 'middle') {
+			y = at_metrics.height / 2;
+		} else if (this.at_reference_configuration.y == 'bottom') {
+			y = at_metrics.height;
+		} else {
+			y = 0;
+		}
+
 		y += at_metrics.top;
 
 		if (this.my_reference_configuration.y == 'top') {
@@ -323,8 +323,8 @@ define([ 'jquery' ], function($) {
 		var viewport_height = this.$viewport.outerHeight(true);
 
 		if (this.my_reference_configuration.y == 'middle') {
-			if ((y + my_metrics.height) > viewport_height) {
-				y = viewport_height - (my_metrics.height * 1.5);
+			if ((y + (my_metrics.height / 2)) > viewport_height) {
+				y = viewport_height - (my_metrics.height / 2);
 			}
 
 			y -= my_metrics.height / 2;
