@@ -86,7 +86,7 @@ define([ 'jquery', 'djt/NodePosition.min' ], function($, NodePosition) {
 	 *
 	 * @method
 	 */
-	NodePosition.prototype.destroy = function() {
+	FixableBlock.prototype.destroy = function() {
 		$(self).off("." + this.event_id);
 	}
 
