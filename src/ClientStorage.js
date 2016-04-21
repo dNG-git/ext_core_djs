@@ -20,7 +20,7 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 /**
  * @module ClientStorage
  */
-define([ ], function() {
+define(function() {
 	/**
 	 * Initialized storage instance in use.
 	 */
