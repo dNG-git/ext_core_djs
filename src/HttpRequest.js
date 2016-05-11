@@ -22,13 +22,6 @@ https://www.direct-netware.de/redirect?licenses;mpl2
  */
 define([ 'jquery' ], function($) {
 	/**
-	 * Object holding currently active request promises.
-	 *
-	 * @static
-	 */
-	var _requests = { };
-
-	/**
 	 * "HttpRequest" is based on a jQuery wrapped XmlHttpRequest AJAX class.
 	 *
 	 * @class HttpRequest
@@ -53,6 +46,13 @@ define([ 'jquery' ], function($) {
 	}
 
 	/**
+	 * Object holding currently active request promises.
+	 *
+	 * @static
+	 */
+	HttpRequest._requests = { };
+
+	/**
 	 * Calls the URL asynchronously by default.
 	 *
 	 * @method
@@ -70,8 +70,8 @@ define([ 'jquery' ], function($) {
 
 		var call_id = (('id' in args) ? args.id : this.id);
 
-		if (call_id != null && call_id in _requests) {
-			_return = _requests[call_id];
+		if (call_id != null && call_id in HttpRequest._requests) {
+			_return = HttpRequest._requests[call_id];
 		} else {
 			args = this._prepare_request_args(args);
 
@@ -92,11 +92,11 @@ define([ 'jquery' ], function($) {
 			_return = $.ajax(args);
 
 			if (call_id != null) {
-				_requests[call_id] = _return;
+				HttpRequest._requests[call_id] = _return;
 				var id = call_id;
 
 				_return.always(function() {
-					delete _requests[id];
+					delete HttpRequest._requests[id];
 				});
 			}
 		}
