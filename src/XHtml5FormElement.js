@@ -28,12 +28,6 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 	 * @constant
 	 */
 	var NEW_INPUT_ATTRIBUTES_COPIED = [ 'id', 'name', 'type', 'size', 'class', 'style', 'multiple', 'tabindex' ];
-	/**
-	 * "tabindex" applied to the next form field.
-	 *
-	 * @static
-	 */
-	var tabindex_count = 1;
 
 	/**
 	 * "XHtml5FormElement" provides some fallback and dynamic features to
@@ -110,6 +104,13 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 			});
 		}
 	}
+
+	/**
+	 * "tabindex" applied to the next form field.
+	 *
+	 * @static
+	 */
+	XHtml5FormElement.tabindex_count = 1;
 
 	/**
 	 * Disable input for a given amount of time.
@@ -317,8 +318,8 @@ define([ 'jquery', 'Hammer', 'Modernizr' ], function($, Hammer, Modernizr) {
 	 */
 	XHtml5FormElement.prototype.propagate_tabindex = function() {
 		if (this.$node.attr('tabindex') === undefined) {
-			this.$node.attr('tabindex', tabindex_count);
-			tabindex_count += 1;
+			this.$node.attr('tabindex', XHtml5FormElement.tabindex_count);
+			XHtml5FormElement.tabindex_count += 1;
 		}
 	}
 
