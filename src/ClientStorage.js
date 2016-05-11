@@ -22,11 +22,6 @@ https://www.direct-netware.de/redirect?licenses;mpl2
  */
 define(function() {
 	/**
-	 * Initialized storage instance in use.
-	 */
-	var _storage = null;
-
-	/**
 	 * "ClientStorage" instances provide easier access to localStorage of the
 	 * client or fallback solutions.
 	 *
@@ -39,9 +34,7 @@ define(function() {
 			args = { };
 		}
 
-		if (_storage != null) {
-			this._setup_instance();
-		} else if ('localStorage' in self) {
+		if ('localStorage' in self) {
 			this._init();
 		} else {
 			var _this = this;
@@ -70,6 +63,11 @@ define(function() {
 	}
 
 	/**
+	 * Initialized storage instance in use.
+	 */
+	ClientStorage._instance = null;
+
+	/**
 	 * Returns the number of keys stored.
 	 *
 	 * @method
@@ -78,7 +76,7 @@ define(function() {
 	 */
 	ClientStorage.prototype.count = function() {
 		this._ensure_storage_instance();
-		return _storage.length;
+		return ClientStorage._instance.length;
 	}
 
 	/**
@@ -87,7 +85,7 @@ define(function() {
 	 * @method
 	 */
 	ClientStorage.prototype._ensure_storage_instance = function() {
-		if (_storage == null) {
+		if (ClientStorage._instance == null) {
 			throw new Error('Storage not initialized');
 		}
 	}
@@ -104,7 +102,7 @@ define(function() {
 	 */
 	ClientStorage.prototype.get = function(key) {
 		this._ensure_storage_instance();
-		return _storage.getItem(key);
+		return ClientStorage._instance.getItem(key);
 	}
 
 	/**
@@ -148,7 +146,9 @@ define(function() {
 	 * @method
 	 */
 	ClientStorage.prototype._init = function() {
-		_storage = self.localStorage;
+		if (ClientStorage._instance == null) {
+			ClientStorage._instance = self.localStorage;
+		}
 
 		this._setup_instance();
 	}
@@ -161,7 +161,7 @@ define(function() {
 	 * @return {boolean} True if ready
 	 */
 	ClientStorage.prototype.is_ready = function() {
-		return (_storage != null);
+		return (ClientStorage._instance != null);
 	}
 
 	/**
@@ -185,7 +185,7 @@ define(function() {
 	 */
 	ClientStorage.prototype.remove = function(key) {
 		this._ensure_storage_instance();
-		_storage.removeItem(key);
+		ClientStorage._instance.removeItem(key);
 	}
 
 	/**
@@ -195,7 +195,7 @@ define(function() {
 	 */
 	ClientStorage.prototype.remove_all = function() {
 		this._ensure_storage_instance();
-		_storage.clear();
+		ClientStorage._instance.clear();
 	}
 
 	/**
@@ -239,7 +239,7 @@ define(function() {
 		this._ensure_storage_instance();
 
 		try {
-			_storage.setItem(key, value);
+			ClientStorage._instance.setItem(key, value);
 		} catch (handled_exception) {
 			_return = false;
 		}
