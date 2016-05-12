@@ -58,6 +58,8 @@ with TemporaryDirectory(dir = ".") as build_directory:
 	      license = "MPL2",
 	      url = "https://www.direct-netware.de/redirect?js;djt",
 
+	      platforms=[ "any" ],
+
 	      data_files = [ ( "docs", [ "LICENSE", "README" ]) ],
 
 	      cmdclass = { "install_data": InstallData }
