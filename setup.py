@@ -53,12 +53,12 @@ with TemporaryDirectory(dir = ".") as build_directory:
 	      version = get_version(),
 	      description = "All-in-one toolbox for HTML5 presentation and manipulation",
 	      long_description = """The "direct JavaScript Toolbox" contain a set of modules for HTML5 presentation and manipulation.""",
-	      author = "direct Netware Group",
+	      author = "direct Netware Group et al.",
 	      author_email = "web@direct-netware.de",
 	      license = "MPL2",
 	      url = "https://www.direct-netware.de/redirect?js;djt",
 
-	      platforms=[ "any" ],
+	      platforms = [ "any" ],
 
 	      data_files = [ ( "docs", [ "LICENSE", "README" ]) ],
 
