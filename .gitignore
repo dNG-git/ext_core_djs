@@ -4,5 +4,6 @@ __py*
 nbproject
 /_extras
 /build
+/djt.*
+/js_djt.*
 /make*.py*
-/pas_http_js.*
