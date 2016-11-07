@@ -13,16 +13,16 @@ obtain one at http://mozilla.org/MPL/2.0/.
 https://www.direct-netware.de/redirect?licenses;mpl2
 // -->
 <project name="js_djt" default="compile.src">
-	<dirname property="djt.basedir" file="${ant.file}" />
-	<property file="${djt.basedir}/_extras/build.properties" />
+    <dirname property="djt.basedir" file="${ant.file}" />
+    <property file="${djt.basedir}/_extras/build.properties" />
 
-	<target name="compile.src" description="Compile module ${ant.project.name}">
-		<exec executable="python">
-			<arg file="${jsBuilder.filePathName}" />
-			<arg value="--filetype=${jsBuilder.fileTypes}" />
-			<arg value="--include=${djt.basedir}/src/" />
-			<arg value="--output_path=${jsBuilder.target}" />
-			<arg value="--strip_prefix=${djt.basedir}/src/" />
-		</exec>
-	</target>
+    <target name="compile.src" description="Compile module ${ant.project.name}">
+        <exec executable="python">
+            <arg file="${jsBuilder.filePathName}" />
+            <arg value="--filetype=${jsBuilder.fileTypes}" />
+            <arg value="--include=${djt.basedir}/src/" />
+            <arg value="--output_path=${jsBuilder.target}" />
+            <arg value="--strip_prefix=${djt.basedir}/src/" />
+        </exec>
+    </target>
 </project>
