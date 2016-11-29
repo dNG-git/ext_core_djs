@@ -20,7 +20,7 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 /**
  * @module ClientStorage
  */
-define(function() {
+define([ 'Modernizr' ], function(Modernizr) {
 	/**
 	 * "ClientStorage" instances provide easier access to localStorage of the
 	 * client or fallback solutions.
@@ -34,7 +34,7 @@ define(function() {
 			args = { };
 		}
 
-		if ('localStorage' in self) {
+		if (Modernizr.localstorage) {
 			this._init();
 		} else {
 			var _this = this;
