@@ -1,5 +1,3 @@
-//j// BOF
-
 /*
 direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
@@ -21,72 +19,70 @@ https://www.direct-netware.de/redirect?licenses;mpl2
  * @module ResponsiveTable
  */
 define([ 'jquery', 'Modernizr' ], function($, Modernizr) {
-	/**
-	 * "ResponsiveTable" enables a HTML table to be responsive for layout changes.
-	 *
-	 * @class ResponsiveTable
-	 *
-	 * @param {object} args Arguments to initialize a given ResponsiveTable
-	 */
-	function ResponsiveTable(args) {
-		if (args === undefined || (!('id' in args))) {
-			throw new Error('Missing required argument');
-		}
+    /**
+     * "ResponsiveTable" enables a HTML table to be responsive for layout changes.
+     *
+     * @class ResponsiveTable
+     *
+     * @param {object} args Arguments to initialize a given ResponsiveTable
+     */
+    function ResponsiveTable(args) {
+        if (args === undefined || (!('id' in args))) {
+            throw new Error('Missing required argument');
+        }
 
-		this.$responsive_table = null;
-		this.responsive_table_class = null;
+        this.$responsive_table = null;
+        this.responsive_table_class = null;
 
-		if (Modernizr.displaytable) {
-			this.$responsive_table = $("#" + args.id);
+        if (Modernizr.displaytable) {
+            this.$responsive_table = $("#" + args.id);
 
-			if ('ResponsiveTable_class' in args) {
-				this.responsive_table_class = args.ResponsiveTable_class;
-			} else if (this.$responsive_table.data('djt-ui-responsivetable-class') != undefined) {
-				this.responsive_table_class = this.$responsive_table.data('djt-ui-responsivetable-class');
-			} else if ('djt_config' in self && 'ResponsiveTable_class' in self.djt_config) {
-				this.responsive_table_class = self.djt_config.ResponsiveTable_class;
-			} else {
-				this.responsive_table_class = 'djt-ui-responsivetable-class';
-			}
+            if ('ResponsiveTable_class' in args) {
+                this.responsive_table_class = args.ResponsiveTable_class;
+            } else if (this.$responsive_table.data('djt-ui-responsivetable-class') != undefined) {
+                this.responsive_table_class = this.$responsive_table.data('djt-ui-responsivetable-class');
+            } else if ('djt_config' in self && 'ResponsiveTable_class' in self.djt_config) {
+                this.responsive_table_class = self.djt_config.ResponsiveTable_class;
+            } else {
+                this.responsive_table_class = 'djt-ui-responsivetable-class';
+            }
 
-			this.$responsive_table.addClass(this.responsive_table_class);
+            this.$responsive_table.addClass(this.responsive_table_class);
 
-			if ('ResponsiveTable_style' in args) {
-				this.$responsive_table.css(args.ResponsiveTable_style);
-			}
+            if ('ResponsiveTable_style' in args) {
+                this.$responsive_table.css(args.ResponsiveTable_style);
+            }
 
-			var $table_headers = this.$responsive_table.find('th');
+            var $table_headers = this.$responsive_table.find('th');
 
-			var headers = [ ];
+            var headers = [ ];
 
-			$table_headers.each(function(i) {
-				headers.push($(this).text().replace(/\r|\n/, ''));
-			});
+            $table_headers.each(function(i) {
+                headers.push($(this).text().replace(/\r|\n/, ''));
+            });
 
-			var $table_rows = this.$responsive_table.find('tbody > tr');
+            var $table_rows = this.$responsive_table.find('tbody > tr');
 
-			for (var i = 0; i < headers.length; i++) {
-				$table_rows.children('td:nth-child(' + (i + 1) + ')').attr('data-th', headers[i]);
-			}
-		}
-	}
+            for (var i = 0; i < headers.length; i++) {
+                $table_rows.children('td:nth-child(' + (i + 1) + ')').attr('data-th', headers[i]);
+            }
+        }
+    }
 
-	/**
-	 * Sets the CSS class to be added to the responsive table.
-	 *
-	 * @method
-	 *
-	 * @param {string} classname CSS class name
-	 */
-	ResponsiveTable.prototype.set_responsive_table_class = function(classname) {
-		if (this.$responsive_table != null) {
-			this.$responsive_table.removeClass(this.responsive_table_class).addClass(classname);
-		}
+    /**
+     * Sets the CSS class to be added to the responsive table.
+     *
+     * @method
+     *
+     * @param {string} classname CSS class name
+     */
+    ResponsiveTable.prototype.set_responsive_table_class = function(classname) {
+        if (this.$responsive_table != null) {
+            this.$responsive_table.removeClass(this.responsive_table_class).addClass(classname);
+        }
 
-		this.responsive_table_class = classname;
-	}
+        this.responsive_table_class = classname;
+    }
 
-	return ResponsiveTable;
+    return ResponsiveTable;
 });
-
-//j// EOF

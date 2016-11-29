@@ -1,5 +1,3 @@
-//j// BOF
-
 /*
 direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
@@ -21,278 +19,276 @@ https://www.direct-netware.de/redirect?licenses;mpl2
  * @module ClientStorage
  */
 define([ 'Modernizr' ], function(Modernizr) {
-	/**
-	 * "ClientStorage" instances provide easier access to localStorage of the
-	 * client or fallback solutions.
-	 *
-	 * @class ClientStorage
-	 *
-	 * @param {object} args Arguments to initialize a given ClientStorage
-	 */
-	function ClientStorage(args) {
-		if (args === undefined) {
-			args = { };
-		}
+    /**
+     * "ClientStorage" instances provide easier access to localStorage of the
+     * client or fallback solutions.
+     *
+     * @class ClientStorage
+     *
+     * @param {object} args Arguments to initialize a given ClientStorage
+     */
+    function ClientStorage(args) {
+        if (args === undefined) {
+            args = { };
+        }
 
-		if (Modernizr.localstorage) {
-			this._init();
-		} else {
-			var _this = this;
+        if (Modernizr.localstorage) {
+            this._init();
+        } else {
+            var _this = this;
 
-			require([ 'jquery' ], function($) {
-				var deferred = $.Deferred();
+            require([ 'jquery' ], function($) {
+                var deferred = $.Deferred();
 
-				var promise = $.ajax({ cache: true,
-				                       dataType: 'script',
-				                       url: require.basePath + '/xhtml5/localStorage.min.js?swfURL=' + require.basePath + '/xhtml5/localStorage.swf'
-				                     });
+                var promise = $.ajax({ cache: true,
+                                       dataType: 'script',
+                                       url: require.basePath + '/xhtml5/localStorage.min.js?swfURL=' + require.basePath + '/xhtml5/localStorage.swf'
+                                     });
 
-				promise.done(function() {
-					if ('isLoaded' in self.localStorage) {
-						self.localStorage.isLoaded(function() { deferred.resolve(); });
-					} else {
-						deferred.resolve();
-					}
-				});
+                promise.done(function() {
+                    if ('isLoaded' in self.localStorage) {
+                        self.localStorage.isLoaded(function() { deferred.resolve(); });
+                    } else {
+                        deferred.resolve();
+                    }
+                });
 
-				$.when(deferred, promise).then(function() {
-					_this._init();
-				});
-			});
-		}
-	}
+                $.when(deferred, promise).then(function() {
+                    _this._init();
+                });
+            });
+        }
+    }
 
-	/**
-	 * Initialized storage instance in use.
-	 */
-	ClientStorage._instance = null;
+    /**
+     * Initialized storage instance in use.
+     */
+    ClientStorage._instance = null;
 
-	/**
-	 * Returns the number of keys stored.
-	 *
-	 * @method
-	 *
-	 * @return {number} Number of keys
-	 */
-	ClientStorage.prototype.count = function() {
-		this._ensure_storage_instance();
-		return ClientStorage._instance.length;
-	}
+    /**
+     * Returns the number of keys stored.
+     *
+     * @method
+     *
+     * @return {number} Number of keys
+     */
+    ClientStorage.prototype.count = function() {
+        this._ensure_storage_instance();
+        return ClientStorage._instance.length;
+    }
 
-	/**
-	 * Checks that the storage object has been initialized.
-	 *
-	 * @method
-	 */
-	ClientStorage.prototype._ensure_storage_instance = function() {
-		if (ClientStorage._instance == null) {
-			throw new Error('Storage not initialized');
-		}
-	}
+    /**
+     * Checks that the storage object has been initialized.
+     *
+     * @method
+     */
+    ClientStorage.prototype._ensure_storage_instance = function() {
+        if (ClientStorage._instance == null) {
+            throw new Error('Storage not initialized');
+        }
+    }
 
-	/**
-	 * w3.org: The method must return the current value associated with the given
-	 * key.
-	 *
-	 * @method
-	 *
-	 * @param {string} key Key identifying the string value requested
-	 *
-	 * @return {string} Value associated with the given key; null if not defined
-	 */
-	ClientStorage.prototype.get = function(key) {
-		this._ensure_storage_instance();
-		return ClientStorage._instance.getItem(key);
-	}
+    /**
+     * w3.org: The method must return the current value associated with the given
+     * key.
+     *
+     * @method
+     *
+     * @param {string} key Key identifying the string value requested
+     *
+     * @return {string} Value associated with the given key; null if not defined
+     */
+    ClientStorage.prototype.get = function(key) {
+        this._ensure_storage_instance();
+        return ClientStorage._instance.getItem(key);
+    }
 
-	/**
-	 * Returns the one-dimensional object associated with the given key.
-	 *
-	 * @method
-	 *
-	 * @param {string} key Key identifying the one-dimensional object requested
-	 *
-	 * @return {object} Object associated with the given key; null if not defined
-	 */
-	ClientStorage.prototype.get_data = function(key) {
-		var _return = null;
+    /**
+     * Returns the one-dimensional object associated with the given key.
+     *
+     * @method
+     *
+     * @param {string} key Key identifying the one-dimensional object requested
+     *
+     * @return {object} Object associated with the given key; null if not defined
+     */
+    ClientStorage.prototype.get_data = function(key) {
+        var _return = null;
 
-		if (this.get(key + ':object_proto') == '1') {
-			_return = { };
+        if (this.get(key + ':object_proto') == '1') {
+            _return = { };
 
-			var data_keys = this.get(key + ':object_keys');
+            var data_keys = this.get(key + ':object_keys');
 
-			if (data_keys == null) {
-				throw new Error('Storage object keys not stored as required by protocol');
-			}
+            if (data_keys == null) {
+                throw new Error('Storage object keys not stored as required by protocol');
+            }
 
-			var data_key = null;
-			var data_value = null;
-			var data_keys_array = data_keys.split(' ');
+            var data_key = null;
+            var data_value = null;
+            var data_keys_array = data_keys.split(' ');
 
-			for (var i = 0; i < data_keys_array.length; i++) {
-				data_key = data_keys_array[i];
-				data_value = this.get(key + '[' + data_key + ']');
-				_return[data_key] = data_value;
-			}
-		}
+            for (var i = 0; i < data_keys_array.length; i++) {
+                data_key = data_keys_array[i];
+                data_value = this.get(key + '[' + data_key + ']');
+                _return[data_key] = data_value;
+            }
+        }
 
-		return _return;
-	}
+        return _return;
+    }
 
-	/**
-	 * Initializes the storage instance to be used.
-	 *
-	 * @method
-	 */
-	ClientStorage.prototype._init = function() {
-		if (ClientStorage._instance == null) {
-			ClientStorage._instance = self.localStorage;
-		}
+    /**
+     * Initializes the storage instance to be used.
+     *
+     * @method
+     */
+    ClientStorage.prototype._init = function() {
+        if (ClientStorage._instance == null) {
+            ClientStorage._instance = self.localStorage;
+        }
 
-		this._setup_instance();
-	}
+        this._setup_instance();
+    }
 
-	/**
-	 * Returns true if the storage has been initialized.
-	 *
-	 * @method
-	 *
-	 * @return {boolean} True if ready
-	 */
-	ClientStorage.prototype.is_ready = function() {
-		return (ClientStorage._instance != null);
-	}
+    /**
+     * Returns true if the storage has been initialized.
+     *
+     * @method
+     *
+     * @return {boolean} True if ready
+     */
+    ClientStorage.prototype.is_ready = function() {
+        return (ClientStorage._instance != null);
+    }
 
-	/**
-	 * Returns true if the given key has been set.
-	 *
-	 * @method
-	 *
-	 * @return {boolean} True if set
-	 */
-	ClientStorage.prototype.is_set = function(key) {
-		return (this.get(key) != null);
-	}
+    /**
+     * Returns true if the given key has been set.
+     *
+     * @method
+     *
+     * @return {boolean} True if set
+     */
+    ClientStorage.prototype.is_set = function(key) {
+        return (this.get(key) != null);
+    }
 
-	/**
-	 * w3.org: The method must cause the key/value pair with the given key to be
-	 * removed from the list associated with the object, if it exists.
-	 *
-	 * @method
-	 *
-	 * @param {string} key Key to be removed
-	 */
-	ClientStorage.prototype.remove = function(key) {
-		this._ensure_storage_instance();
-		ClientStorage._instance.removeItem(key);
-	}
+    /**
+     * w3.org: The method must cause the key/value pair with the given key to be
+     * removed from the list associated with the object, if it exists.
+     *
+     * @method
+     *
+     * @param {string} key Key to be removed
+     */
+    ClientStorage.prototype.remove = function(key) {
+        this._ensure_storage_instance();
+        ClientStorage._instance.removeItem(key);
+    }
 
-	/**
-	 * Removes all data from the storage.
-	 *
-	 * @method
-	 */
-	ClientStorage.prototype.remove_all = function() {
-		this._ensure_storage_instance();
-		ClientStorage._instance.clear();
-	}
+    /**
+     * Removes all data from the storage.
+     *
+     * @method
+     */
+    ClientStorage.prototype.remove_all = function() {
+        this._ensure_storage_instance();
+        ClientStorage._instance.clear();
+    }
 
-	/**
-	 * Removes all data of the one-dimensional object associated with the given
-	 * key.
-	 *
-	 * @method
-	 *
-	 * @param {string} key Key identifying the one-dimensional object to be removed
-	 */
-	ClientStorage.prototype.remove_data = function(key) {
-		if (this.is_set(key + ':object_proto')) {
-			this.remove(key + ':object_proto');
+    /**
+     * Removes all data of the one-dimensional object associated with the given
+     * key.
+     *
+     * @method
+     *
+     * @param {string} key Key identifying the one-dimensional object to be removed
+     */
+    ClientStorage.prototype.remove_data = function(key) {
+        if (this.is_set(key + ':object_proto')) {
+            this.remove(key + ':object_proto');
 
-			var data_keys = this.get(key + ':object_keys');
+            var data_keys = this.get(key + ':object_keys');
 
-			if (data_keys != null) {
-				var data_keys_array = data_keys.split(' ');
+            if (data_keys != null) {
+                var data_keys_array = data_keys.split(' ');
 
-				for (var i = 0; i < data_keys_array.length; i++) {
-					data_key = data_keys_array[i];
-					this.remove(key + '[' + data_key + ']');
-				}
-			}
+                for (var i = 0; i < data_keys_array.length; i++) {
+                    data_key = data_keys_array[i];
+                    this.remove(key + '[' + data_key + ']');
+                }
+            }
 
-			this.remove(key + ':object_keys');
-		}
-	}
+            this.remove(key + ':object_keys');
+        }
+    }
 
-	/**
-	 * The method sets the value associated with the given key.
-	 *
-	 * @method
-	 *
-	 * @param {string} key Key identifying the value
-	 * @param {string} value String value
-	 */
-	ClientStorage.prototype.set = function(key, value) {
-		var _return = true;
+    /**
+     * The method sets the value associated with the given key.
+     *
+     * @method
+     *
+     * @param {string} key Key identifying the value
+     * @param {string} value String value
+     */
+    ClientStorage.prototype.set = function(key, value) {
+        var _return = true;
 
-		this._ensure_storage_instance();
+        this._ensure_storage_instance();
 
-		try {
-			ClientStorage._instance.setItem(key, value);
-		} catch (handled_exception) {
-			_return = false;
-		}
+        try {
+            ClientStorage._instance.setItem(key, value);
+        } catch (handled_exception) {
+            _return = false;
+        }
 
-		return _return;
-	}
+        return _return;
+    }
 
-	/**
-	 * Sets data of the one-dimensional object associated with the given key.
-	 *
-	 * @method
-	 *
-	 * @param {string} key Key identifying the one-dimensional object
-	 * @param {object} data One-dimensional object
-	 */
-	ClientStorage.prototype.set_data = function(key, data) {
-		var is_saved = this.set(key + ':object_proto', '1');
+    /**
+     * Sets data of the one-dimensional object associated with the given key.
+     *
+     * @method
+     *
+     * @param {string} key Key identifying the one-dimensional object
+     * @param {object} data One-dimensional object
+     */
+    ClientStorage.prototype.set_data = function(key, data) {
+        var is_saved = this.set(key + ':object_proto', '1');
 
-		var data_keys = [ ];
-		var _this = this;
+        var data_keys = [ ];
+        var _this = this;
 
-		$.each(data, function(data_key, data_value) {
-			if (typeof data_value != 'string') {
-				is_saved = false;
-				return false;
-			}
+        $.each(data, function(data_key, data_value) {
+            if (typeof data_value != 'string') {
+                is_saved = false;
+                return false;
+            }
 
-			if (!(is_saved && _this.set(key + '[' + data_key + ']', data_value))) {
-				is_saved = false;
-				return false;
-			}
+            if (!(is_saved && _this.set(key + '[' + data_key + ']', data_value))) {
+                is_saved = false;
+                return false;
+            }
 
-			data_keys.push(data_key);
-		});
+            data_keys.push(data_key);
+        });
 
-		if (!this.set(key + ':object_keys', data_keys.join(' '))) {
-			is_saved = false;
-		}
+        if (!this.set(key + ':object_keys', data_keys.join(' '))) {
+            is_saved = false;
+        }
 
-		if (!(is_saved)) {
-			this.remove_data(key);
-			throw new Error('Storage reported an error while saving data');
-		}
-	}
+        if (!(is_saved)) {
+            this.remove_data(key);
+            throw new Error('Storage reported an error while saving data');
+        }
+    }
 
-	/**
-	 * Sets up data for this ClientStorage instance.
-	 *
-	 * @method
-	 */
-	ClientStorage.prototype._setup_instance = function() { }
+    /**
+     * Sets up data for this ClientStorage instance.
+     *
+     * @method
+     */
+    ClientStorage.prototype._setup_instance = function() { }
 
-	return ClientStorage;
+    return ClientStorage;
 });
-
-//j// EOF

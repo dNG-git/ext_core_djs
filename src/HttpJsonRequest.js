@@ -1,5 +1,3 @@
-//j// BOF
-
 /*
 direct JavaScript Toolbox
 All-in-one toolbox for HTML5 presentation and manipulation
@@ -21,35 +19,33 @@ https://www.direct-netware.de/redirect?licenses;mpl2
  * @module HttpJsonRequest
  */
 define([ 'jquery', 'djt/HttpRequest.min' ], function($, _super) {
-	/**
-	 * "HttpJsonRequest" extends "HttpRequest" and expects JSON encoded responses.
-	 *
-	 * @class HttpJsonRequest
-	 *
-	 * @param {object} args Arguments to initialize a given HttpJsonRequest
-	 */
-	function HttpJsonRequest(args) {
-		_super.call(this, args);
-	}
+    /**
+     * "HttpJsonRequest" extends "HttpRequest" and expects JSON encoded responses.
+     *
+     * @class HttpJsonRequest
+     *
+     * @param {object} args Arguments to initialize a given HttpJsonRequest
+     */
+    function HttpJsonRequest(args) {
+        _super.call(this, args);
+    }
 
-	$.extend(HttpJsonRequest.prototype, _super.prototype);
+    $.extend(HttpJsonRequest.prototype, _super.prototype);
 
-	/**
-	 * Prepares and extends the given request arguments.
-	 *
-	 * @method
-	 *
-	 * @param {object} args Base arguments
-	 *
-	 * @return {object} Prepared and extended arguments
-	 */
-	HttpJsonRequest.prototype._prepare_request_args = function(args) {
-		var _return = _super.prototype._prepare_request_args.call(this, args);
-		_return['dataType'] = 'json';
-		return _return;
-	}
+    /**
+     * Prepares and extends the given request arguments.
+     *
+     * @method
+     *
+     * @param {object} args Base arguments
+     *
+     * @return {object} Prepared and extended arguments
+     */
+    HttpJsonRequest.prototype._prepare_request_args = function(args) {
+        var _return = _super.prototype._prepare_request_args.call(this, args);
+        _return['dataType'] = 'json';
+        return _return;
+    }
 
-	return HttpJsonRequest;
+    return HttpJsonRequest;
 });
-
-//j// EOF
