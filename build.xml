@@ -21,7 +21,6 @@ https://www.direct-netware.de/redirect?licenses;mpl2
             <arg file="${jsBuilder.filePathName}" />
             <arg value="--filetype=${jsBuilder.fileTypes}" />
             <arg value="--include=${djt.basedir}/src/" />
-            <arg value="--output_path=${jsBuilder.target}" />
             <arg value="--strip_prefix=${djt.basedir}/src/" />
         </exec>
     </target>
